@@ -1,0 +1,196 @@
+{
+  "news": [
+    {
+      "title": "bla bal bla",
+      "summary": "ini pembaharuan",
+      "fullContent": "inizcxvccvbvbcvvbv",
+      "category": "Olahraga",
+      "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+      "author": "bob",
+      "authorAvatar": "https://i.pravatar.cc/40?img=1",
+      "trending": true,
+      "id": 1770796433228,
+      "catColor": "bg-orange-100 text-orange-700",
+      "likes": 0,
+      "comments": 0,
+      "views": "0",
+      "time": "Baru saja"
+    },
+    {
+      "title": "Judul Berita",
+      "summary": "Y",
+      "fullContent": "Iyakah",
+      "category": "Teknologi",
+      "image": "",
+      "author": "",
+      "authorAvatar": "",
+      "trending": false,
+      "id": 1770795943607,
+      "catColor": "bg-blue-100 text-blue-700",
+      "likes": 0,
+      "comments": 0,
+      "views": "0",
+      "time": "Baru saja"
+    },
+    {
+      "title": "Test 1",
+      "summary": "Ini ringkasan",
+      "fullContent": "Ini Konten Lengkap",
+      "category": "Teknologi",
+      "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+      "author": "Bob",
+      "authorAvatar": "https://i.pravatar.cc/40?img=1",
+      "trending": false,
+      "id": 1770795815389,
+      "catColor": "bg-blue-100 text-blue-700",
+      "likes": 0,
+      "comments": 0,
+      "views": "0",
+      "time": "Baru saja"
+    },
+    {
+      "id": 1,
+      "category": "Teknologi",
+      "catColor": "bg-blue-100 text-blue-700",
+      "title": "AI Generatif Revolusi Dunia Pendidikan Indonesia di Tahun 2026",
+      "summary": "Kecerdasan buatan generatif kini mulai diadopsi secara massal di berbagai institusi pendidikan Indonesia.",
+      "fullContent": "Kecerdasan buatan generatif kini mulai diadopsi secara massal di berbagai institusi pendidikan Indonesia. Mulai dari pembuatan materi ajar yang dipersonalisasi hingga sistem evaluasi otomatis, AI mengubah cara guru dan siswa berinteraksi di ruang kelas.\n\nKementerian Pendidikan dan Kebudayaan meluncurkan program \"AI untuk Semua\" yang memberikan akses gratis ke platform pembelajaran berbasis AI bagi seluruh sekolah negeri. Program ini telah menjangkau lebih dari 50.000 sekolah di seluruh nusantara.\n\nDr. Rina Maharani, pakar pendidikan digital dari Universitas Indonesia, mengatakan bahwa transformasi ini tidak hanya soal teknologi, tetapi juga tentang kesetaraan akses pendidikan. \"Dengan AI, siswa di pelosok Papua bisa mendapatkan kualitas pengajaran yang setara dengan Jakarta,\" ujarnya.\n\nNamun, tantangan tetap ada. Infrastruktur internet yang belum merata dan kesiapan tenaga pengajar menjadi dua hambatan utama yang perlu segera diatasi pemerintah.",
+      "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+      "author": "Dewi Kartika",
+      "authorAvatar": "https://i.pravatar.cc/40?img=1",
+      "time": "2 jam lalu",
+      "likes": 1243,
+      "comments": 89,
+      "views": "15.2K",
+      "trending": true
+    },
+    {
+      "id": 2,
+      "category": "Ekonomi",
+      "catColor": "bg-emerald-100 text-emerald-700",
+      "title": "Rupiah Menguat Tajam, IHSG Cetak Rekor Tertinggi Sepanjang Masa",
+      "summary": "Nilai tukar rupiah terhadap dolar AS menguat signifikan ke level Rp14.800 per dolar.",
+      "fullContent": "Nilai tukar rupiah terhadap dolar AS menguat signifikan ke level Rp14.800 per dolar AS pada perdagangan Selasa (10/2/2026). Penguatan ini menjadi yang tertajam dalam 3 tahun terakhir.\n\nIndeks Harga Saham Gabungan (IHSG) turut merespons positif dengan mencetak rekor tertinggi sepanjang masa di level 8.456,78. Sektor perbankan dan teknologi menjadi penopang utama kenaikan ini.\n\nAnalis ekonomi senior, Budi Prasetyo, menyebut bahwa penguatan ini didorong oleh masuknya arus modal asing yang masif ke pasar Indonesia. \"Investor global melihat Indonesia sebagai emerging market paling menjanjikan di ASEAN saat ini,\" jelasnya.\n\nBank Indonesia diperkirakan akan mempertahankan suku bunga acuannya di level 5,25% pada rapat dewan gubernur pekan depan, mengingat inflasi yang tetap terkendali di angka 2,8% year-on-year.",
+      "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=800",
+      "author": "Rizki Pratama",
+      "authorAvatar": "https://i.pravatar.cc/40?img=3",
+      "time": "4 jam lalu",
+      "likes": 876,
+      "comments": 124,
+      "views": "22.1K",
+      "trending": true
+    },
+    {
+      "id": 3,
+      "category": "Olahraga",
+      "catColor": "bg-orange-100 text-orange-700",
+      "title": "Timnas Indonesia Lolos ke Piala Dunia 2026: Sejarah Baru Sepak Bola Tanah Air",
+      "summary": "Untuk pertama kalinya dalam sejarah, Tim Nasional Indonesia berhasil menembus fase grup Piala Dunia.",
+      "fullContent": "Untuk pertama kalinya dalam sejarah, Tim Nasional Indonesia berhasil menembus fase grup Piala Dunia 2026 yang digelar di Amerika Serikat, Meksiko, dan Kanada. Keberhasilan ini dicapai setelah mengalahkan Australia 2-1 di laga playoff antar konfederasi.\n\nGol-gol Indonesia dicetak oleh Marselino Ferdinan pada menit ke-23 dan Pratama Arhan di menit ke-67. Stadion Gelora Bung Karno yang menjadi saksi bisu laga bersejarah ini meledak dalam euforia.\n\nPelatih Shin Tae-yong yang telah membesarkan timnas sejak 2020 tidak bisa menahan air matanya. \"Ini bukan keberhasilan saya pribadi, ini adalah keberhasilan 280 juta rakyat Indonesia,\" ucapnya dalam konferensi pers.\n\nPresiden Prabowo Subianto langsung memberikan ucapan selamat dan mengumumkan bonus sebesar Rp50 miliar untuk seluruh kontingen timnas. Hari ini juga ditetapkan sebagai hari libur nasional dadakan.",
+      "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800",
+      "author": "Ahmad Syaiful",
+      "authorAvatar": "https://i.pravatar.cc/40?img=5",
+      "time": "6 jam lalu",
+      "likes": 5621,
+      "comments": 432,
+      "views": "89.3K",
+      "trending": false
+    },
+    {
+      "id": 4,
+      "category": "Kesehatan",
+      "catColor": "bg-rose-100 text-rose-700",
+      "title": "Vaksin Kanker Buatan Anak Bangsa Masuki Uji Klinis Fase III",
+      "summary": "Tim peneliti dari Institut Teknologi Bandung berhasil mengembangkan vaksin terapi kanker berbasis mRNA.",
+      "fullContent": "Tim peneliti dari Institut Teknologi Bandung (ITB) berhasil mengembangkan vaksin terapi kanker berbasis mRNA yang kini memasuki uji klinis fase III. Vaksin yang diberi nama \"OncoGuard-ID\" ini menyasar kanker payudara dan paru-paru.\n\nProf. Dr. Lina Wijaya, ketua tim peneliti, menjelaskan bahwa vaksin ini bekerja dengan memprogram sistem imun tubuh untuk mengenali dan menyerang sel kanker secara spesifik. \"Hasil uji klinis fase II menunjukkan tingkat respons tumor mencapai 73%, jauh melampaui ekspektasi kami,\" ungkapnya.\n\nPenelitian ini mendapat pendanaan sebesar Rp2,3 triliun dari gabungan dana pemerintah dan investor swasta. Jika berhasil melewati fase III, vaksin ini diharapkan bisa tersedia untuk publik pada awal 2028.\n\nOrganisasi Kesehatan Dunia (WHO) telah memberikan apresiasi atas pencapaian ini dan menyebut Indonesia sebagai pionir riset vaksin kanker di kawasan Asia Tenggara.",
+      "image": "https://images.unsplash.com/photo-1579165466949-3180a3d056d5?auto=format&fit=crop&q=80&w=800",
+      "author": "Dr. Maya Sari",
+      "authorAvatar": "https://i.pravatar.cc/40?img=9",
+      "time": "8 jam lalu",
+      "likes": 2340,
+      "comments": 201,
+      "views": "34.7K",
+      "trending": true
+    },
+    {
+      "id": 5,
+      "category": "Hiburan",
+      "catColor": "bg-purple-100 text-purple-700",
+      "title": "Film \"Nusantara\" Karya Sineas Lokal Raih Penghargaan di Festival Cannes",
+      "summary": "Film bertajuk \"Nusantara\" yang disutradarai oleh Joko Anwar berhasil membawa pulang Palme d'Or.",
+      "fullContent": "Film bertajuk \"Nusantara\" yang disutradarai oleh Joko Anwar berhasil membawa pulang Palme d'Or dari Festival Film Cannes 2026. Ini merupakan pertama kalinya film Indonesia meraih penghargaan tertinggi di festival film paling prestisius di dunia.\n\nFilm ini mengisahkan perjalanan seorang nelayan dari Flores yang melintasi lautan nusantara untuk mencari anaknya yang hilang. Dengan sinematografi memukau yang menampilkan keindahan alam Indonesia dari Sabang sampai Merauke, film ini mendapat standing ovation selama 12 menit di pemutaran perdananya.\n\nJuri festival memuji film ini sebagai \"mahakarya sinema yang merayakan kemanusiaan dan keindahan alam dengan cara yang belum pernah terlihat sebelumnya di layar lebar.\"\n\nJoko Anwar dalam pidato penerimaannya mengatakan, \"Film ini saya dedikasikan untuk seluruh rakyat Indonesia. Kita punya cerita yang layak didengar dunia.\"",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800",
+      "author": "Putri Anggraeni",
+      "authorAvatar": "https://i.pravatar.cc/40?img=16",
+      "time": "10 jam lalu",
+      "likes": 3890,
+      "comments": 267,
+      "views": "56.8K",
+      "trending": false
+    },
+    {
+      "id": 6,
+      "category": "Politik",
+      "catColor": "bg-red-100 text-red-700",
+      "title": "RUU Perlindungan Data Pribadi Resmi Berlaku, Sanksi Tegas Bagi Pelanggar",
+      "summary": "Undang-Undang Perlindungan Data Pribadi (UU PDP) resmi berlaku efektif mulai hari ini.",
+      "fullContent": "Undang-Undang Perlindungan Data Pribadi (UU PDP) resmi berlaku efektif mulai hari ini setelah masa transisi selama dua tahun. Seluruh perusahaan dan institusi yang mengelola data warga Indonesia wajib mematuhi ketentuan baru ini.\n\nSanksi yang ditetapkan cukup berat, yakni denda maksimal 2% dari pendapatan tahunan perusahaan atau Rp100 miliar, mana yang lebih besar. Bagi pelanggaran yang bersifat pidana, ancaman hukuman penjara mencapai 6 tahun.\n\nKetua Lembaga Perlindungan Data Pribadi, Dr. Hendro Wicaksono, menegaskan bahwa lembaganya siap menindak tegas setiap pelanggaran. \"Kami sudah menerima lebih dari 10.000 laporan pelanggaran data dalam setahun terakhir, dan kini kami memiliki dasar hukum yang kuat untuk bertindak,\" tegasnya.\n\nKalangan industri teknologi menyambut baik belakunya UU ini, meski beberapa perusahaan startup mengaku masih perlu waktu untuk menyesuaikan infrastruktur mereka.",
+      "image": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&q=80&w=800",
+      "author": "Fajar Nugroho",
+      "authorAvatar": "https://i.pravatar.cc/40?img=12",
+      "time": "12 jam lalu",
+      "likes": 1567,
+      "comments": 345,
+      "views": "41.2K",
+      "trending": false
+    }
+  ],
+  "trending": [
+    {
+      "id": 1,
+      "title": "Timnas Indonesia Piala Dunia",
+      "posts": "125K posts"
+    },
+    {
+      "id": 2,
+      "title": "Vaksin Kanker ITB",
+      "posts": "89K posts"
+    },
+    {
+      "id": 3,
+      "title": "Rupiah Menguat",
+      "posts": "67K posts"
+    },
+    {
+      "id": 4,
+      "title": "Film Nusantara Cannes",
+      "posts": "54K posts"
+    },
+    {
+      "id": 5,
+      "title": "UU Perlindungan Data",
+      "posts": "43K posts"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "name": "Kompas Digital",
+      "handle": "@kompascom",
+      "avatar": "https://i.pravatar.cc/40?img=20"
+    },
+    {
+      "id": 2,
+      "name": "Tech in Asia ID",
+      "handle": "@techinasia",
+      "avatar": "https://i.pravatar.cc/40?img=21"
+    },
+    {
+      "id": 3,
+      "name": "CNN Indonesia",
+      "handle": "@cnnindonesia",
+      "avatar": "https://i.pravatar.cc/40?img=22"
+    }
+  ],
+  "breakingText": "Timnas Indonesia resmi lolos ke Piala Dunia 2026 — Sejarah baru sepak bola tanah air!"
+}
