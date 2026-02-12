@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Menu, X, Newspaper, Settings, Moon, Sun } from 'lucide-react';
+import { useCms } from '../store/cmsStore.jsx';
 
 const categories = ['Terbaru', 'Politik', 'Ekonomi', 'Teknologi', 'Olahraga', 'Hiburan', 'Kesehatan'];
 
@@ -8,6 +9,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const { searchQuery, setSearchQuery } = useCms();
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains('dark'));
@@ -88,12 +90,16 @@ export default function Navbar() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden pb-3"
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="pb-3"
+              style={{ overflow: 'hidden' }}
             >
               <input
                 autoFocus
                 type="text"
                 placeholder="Cari berita..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </motion.div>

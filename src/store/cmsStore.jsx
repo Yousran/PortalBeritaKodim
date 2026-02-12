@@ -191,12 +191,16 @@ export function CmsProvider({ children }) {
   // ======== CATEGORY FILTER ========
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // ======== SEARCH ========
+  const [searchQuery, setSearchQuery] = useState('');
+
   const value = {
     news, addNews, updateNews, deleteNews,
     trending, addTrending, deleteTrending, updateTrending,
     sources, addSource, deleteSource, updateSource,
     breakingText, setBreaking,
     selectedCategory, setSelectedCategory,
+    searchQuery, setSearchQuery,
     resetAll, loaded,
   };
 

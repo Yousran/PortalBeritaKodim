@@ -175,12 +175,14 @@ function NewsCard({ news }) {
 }
 
 export default function NewsFeed() {
-  const { news, breakingText, selectedCategory, setSelectedCategory } = useCms();
+  const { news, breakingText, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useCms();
   const [visibleCount, setVisibleCount] = useState(3);
 
-  const filteredNews = selectedCategory
-    ? news.filter((item) => item.category === selectedCategory)
-    : news;
+  const filteredNews = news.filter((item) => {
+    const matchCategory = !selectedCategory || item.category === selectedCategory;
+    const matchSearch = !searchQuery || item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
   const visibleNews = filteredNews.slice(0, visibleCount);
   const hasMore = visibleCount < filteredNews.length;
 
@@ -204,6 +206,19 @@ export default function NewsFeed() {
             {breakingText}
           </p>
         </motion.div>
+      )}
+
+      {/* Search Filter Info */}
+      {searchQuery && (
+        <div className="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-between">
+          <span>Hasil pencarian: <strong>"{searchQuery}"</strong> ({filteredNews.length} berita)</span>
+          <button
+            onClick={() => setSearchQuery('')}
+            className="text-blue-500 hover:text-blue-800 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
       )}
 
       {/* Category Filter Info */}
