@@ -370,9 +370,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Dibuat dengan ❤️ untuk Kodim 1408 Makassar
 
 **Maintainer:** 
-RezkyRobby
-AurelioPalinoan
-Yousran
+- RezkyRobby
+- AurelioPalinoan
+- Yousran
 
 ---
 
