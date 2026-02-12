@@ -380,7 +380,7 @@ Dibuat dengan ❤️ untuk Kodim 1408 Makassar
 
 - 🐛 **Bug Reports**: [Issues](https://github.com/username/PortalBeritaKodim/issues)
 - 💡 **Feature Requests**: [Discussions](https://github.com/username/PortalBeritaKodim/discussions)
-- 📧 **Email**: info@kodim1408makassar.id
+- 📧 **Email**: akbarirr23h@student.unhas.ac.id
 
 ---
 
