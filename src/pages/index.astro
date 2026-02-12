@@ -13,8 +13,13 @@ import '../styles/global.css';
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
         <title>KabarKini - Portal Berita Terkini</title>
+        <script is:inline>
+            if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        </script>
     </head>
-    <body class="bg-[#f0f2f5] min-h-screen">
+    <body class="bg-[#f0f2f5] dark:bg-[#0f172a] min-h-screen transition-colors duration-300">
         <HomeApp client:load />
     </body>
 </html>

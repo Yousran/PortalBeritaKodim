@@ -49,11 +49,11 @@ export default function Sidebar() {
         initial={{ opacity: 0, x: 30 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"
       >
         <div className="flex items-center gap-2 mb-4">
           <Flame size={20} className="text-orange-500" />
-          <h3 className="font-bold text-gray-900">Sedang Trending</h3>
+          <h3 className="font-bold text-gray-900 dark:text-white">Sedang Trending</h3>
         </div>
         {trendingNews.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Belum ada berita trending.</p>
@@ -61,9 +61,9 @@ export default function Sidebar() {
         <div className="space-y-3">
           {trendingNews.map((item, index) => (
             <div key={item.id} className="flex items-start gap-3 group cursor-pointer">
-              <span className="text-lg font-black text-gray-300 w-6 text-right">{index + 1}</span>
+              <span className="text-lg font-black text-gray-300 dark:text-gray-600 w-6 text-right">{index + 1}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-600 transition-colors">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {item.title}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
@@ -85,16 +85,16 @@ export default function Sidebar() {
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"
       >
-        <h3 className="font-bold text-gray-900 mb-4">Kategori</h3>
+        <h3 className="font-bold text-gray-900 dark:text-white mb-4">Kategori</h3>
         {categories.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Belum ada kategori.</p>
         )}
         {selectedCategory && (
           <button
             onClick={() => setSelectedCategory(null)}
-            className="mb-3 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+            className="mb-3 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
           >
             ✕ Hapus filter
           </button>
@@ -106,14 +106,14 @@ export default function Sidebar() {
               onClick={() => setSelectedCategory(selectedCategory === cat.name ? null : cat.name)}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-colors group text-left ${
                 selectedCategory === cat.name
-                  ? 'bg-indigo-50 ring-2 ring-indigo-400'
-                  : 'hover:bg-gray-50'
+                  ? 'bg-indigo-50 dark:bg-indigo-900/30 ring-2 ring-indigo-400'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full ${cat.color}`} />
               <div className="min-w-0">
                 <p className={`text-sm font-medium truncate ${
-                  selectedCategory === cat.name ? 'text-indigo-700' : 'text-gray-700 group-hover:text-gray-900'
+                  selectedCategory === cat.name ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'
                 }`}>{cat.name}</p>
                 <p className="text-xs text-gray-400">{cat.count} berita</p>
               </div>

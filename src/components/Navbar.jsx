@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Menu, X, Newspaper, Settings } from 'lucide-react';
+import { Search, Menu, X, Newspaper, Settings, Moon, Sun } from 'lucide-react';
 
 const categories = ['Terbaru', 'Politik', 'Ekonomi', 'Teknologi', 'Olahraga', 'Hiburan', 'Kesehatan'];
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  const toggleTheme = () => {
+    const isDark = !dark;
+    setDark(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -19,7 +31,7 @@ export default function Navbar() {
               alt="Logo Kodim"
               className="w-[48px] h-[48px] object-contain"
             />
-            <span className="text-xl font-black text-gray-900 tracking-tight">
+            <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
               Info<span className="text-[#35CE8D]">Kodim</span>
             </span>
           </a>
@@ -29,7 +41,7 @@ export default function Navbar() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-[#306B34] hover:bg-[#306B34]/20 rounded-full transition-colors"
+                className="px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[#306B34] dark:hover:text-[#35CE8D] hover:bg-[#306B34]/20 dark:hover:bg-[#35CE8D]/20 rounded-full transition-colors"
               >
                 {cat}
               </button>
@@ -40,21 +52,29 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 hover:bg-[gray-100] rounded-full transition-colors"
+              onClick={toggleTheme}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              title={dark ? 'Light Mode' : 'Dark Mode'}
             >
-              <Search size={20} className="text-gray-600" />
+              {dark ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-gray-600" />}
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <Search size={20} className="text-gray-600 dark:text-gray-300" />
             </motion.button>
             <a
               href="/admin"
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600 hover:text-indigo-600"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
               title="Admin Panel"
             >
               <Settings size={20} />
             </a>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-600 dark:text-gray-300"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -74,7 +94,7 @@ export default function Navbar() {
                 autoFocus
                 type="text"
                 placeholder="Cari berita..."
-                className="w-full px-4 py-2.5 bg-gray-100 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </motion.div>
           )}
@@ -88,13 +108,13 @@ export default function Navbar() {
             initial={{ height: 0 }}
             animate={{ height: 'auto' }}
             exit={{ height: 0 }}
-            className="md:hidden overflow-hidden bg-white border-t border-gray-100"
+            className="md:hidden overflow-hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800"
           >
             <div className="px-4 py-3 flex flex-wrap gap-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-full transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-full transition-colors"
                 >
                   {cat}
                 </button>

@@ -46,14 +46,14 @@ function NewsCard({ news }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.4 }}
-        className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
       >
         {/* Author Header */}
         <div className="flex items-center gap-3 p-4 pb-2">
-          <img src={news.authorAvatar || 'https://i.pravatar.cc/40?img=0'} alt={news.author} className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100" />
+          <img src={news.authorAvatar || 'https://i.pravatar.cc/40?img=0'} alt={news.author} className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100 dark:ring-indigo-900" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900 truncate">{news.author || 'Anonim'}</p>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{news.author || 'Anonim'}</p>
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <Clock size={12} />
               <span>{timeAgo(news.createdAt)}</span>
               {news.trending && (
@@ -88,7 +88,7 @@ function NewsCard({ news }) {
 
         {!news.image && (
           <div className="px-4 pt-2">
-            <h2 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => setExpanded(true)}>
+            <h2 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white leading-tight cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" onClick={() => setExpanded(true)}>
               {news.title}
             </h2>
           </div>
@@ -96,12 +96,12 @@ function NewsCard({ news }) {
 
         {/* Description - Truncated */}
         <div className="px-4 pt-3">
-          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2">
             {news.summary}
           </p>
           <button
             onClick={() => setExpanded(true)}
-            className="text-indigo-600 text-sm font-semibold mt-1 hover:text-indigo-800 transition-colors"
+            className="text-indigo-600 dark:text-indigo-400 text-sm font-semibold mt-1 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
           >
             Baca selengkapnya...
           </button>
@@ -126,18 +126,18 @@ function NewsCard({ news }) {
               exit={{ y: '100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl"
+              className="bg-white dark:bg-gray-900 w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl"
             >
               {/* Close button */}
-              <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-md flex items-center justify-between px-5 py-3 border-b border-gray-100">
+              <div className="sticky top-0 z-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800">
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${news.catColor}`}>
                   {news.category}
                 </span>
                 <button
                   onClick={() => setExpanded(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                 >
-                  <X size={20} className="text-gray-500" />
+                  <X size={20} className="text-gray-500 dark:text-gray-400" />
                 </button>
               </div>
 
@@ -148,19 +148,19 @@ function NewsCard({ news }) {
 
               {/* Full Content */}
               <div className="p-5 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight mb-3">
                   {news.title}
                 </h2>
 
                 <div className="flex items-center gap-3 mb-5">
                   <img src={news.authorAvatar || 'https://i.pravatar.cc/40?img=0'} alt={news.author} className="w-8 h-8 rounded-full" />
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{news.author || 'Anonim'}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{news.author || 'Anonim'}</p>
                     <p className="text-xs text-gray-400">{timeAgo(news.createdAt)}</p>
                   </div>
                 </div>
 
-                <div className="text-gray-700 text-[15px] leading-relaxed whitespace-pre-line">
+                <div className="text-gray-700 dark:text-gray-300 text-[15px] leading-relaxed whitespace-pre-line">
                   {news.fullContent || news.summary}
                 </div>
 
@@ -208,11 +208,11 @@ export default function NewsFeed() {
 
       {/* Category Filter Info */}
       {selectedCategory && (
-        <div className="bg-indigo-50 text-indigo-700 px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-between">
+        <div className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-between">
           <span>Menampilkan kategori: <strong>{selectedCategory}</strong> ({filteredNews.length} berita)</span>
           <button
             onClick={() => setSelectedCategory(null)}
-            className="text-indigo-500 hover:text-indigo-800 transition-colors"
+            className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
           >
             <X size={16} />
           </button>
@@ -221,7 +221,7 @@ export default function NewsFeed() {
 
       {/* Feed */}
       {filteredNews.length === 0 && (
-        <div className="bg-white rounded-2xl p-12 text-center text-gray-400">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center text-gray-400">
           <p className="text-lg font-medium">{selectedCategory ? `Belum ada berita ${selectedCategory}.` : 'Belum ada berita.'}</p>
           <p className="text-sm mt-1">Tambahkan berita melalui Admin Panel.</p>
         </div>
@@ -235,7 +235,7 @@ export default function NewsFeed() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={showMore}
-          className="w-full py-4 bg-white rounded-2xl text-indigo-600 font-semibold hover:bg-indigo-50 transition-colors shadow-sm border border-gray-100"
+          className="w-full py-4 bg-white dark:bg-gray-800 rounded-2xl text-indigo-600 dark:text-indigo-400 font-semibold hover:bg-indigo-50 dark:hover:bg-gray-700 transition-colors shadow-sm border border-gray-100 dark:border-gray-700"
         >
           Tampilkan Berita Lainnya ({filteredNews.length - visibleCount} tersisa)
         </motion.button>
