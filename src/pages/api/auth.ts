@@ -5,8 +5,8 @@ export const POST: APIRoute = async ({ request }) => {
     const { username, password } = await request.json();
 
     // Get credentials from environment variables
-    const ADMIN_USERNAME = import.meta.env.ADMIN_USERNAME || 'admin';
-    const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || 'admin12345';
+    const ADMIN_USERNAME = import.meta.env.ADMIN_USERNAME;
+    const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
 
     // Validate credentials
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
