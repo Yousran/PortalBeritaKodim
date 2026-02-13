@@ -14,7 +14,7 @@ export default function HomeApp() {
           <div className="flex-1 min-w-0">
             <NewsFeed />
           </div>
-          <aside className="w-full lg:w-80 shrink-0">
+          <aside className="w-full lg:w-80 shrink-0 lg:self-start">
             <Sidebar />
           </aside>
         </div>
