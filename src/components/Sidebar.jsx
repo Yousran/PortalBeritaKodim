@@ -63,7 +63,7 @@ export default function Sidebar() {
       >
         <div className="flex items-center gap-2 mb-4">
           <Flame size={20} className="text-orange-500" />
-          <h3 className="font-bold text-gray-900 dark:text-white">Sedang Trending</h3>
+          <h3 className="font-bold text-gray-900 dark:text-white">Sedang Trend</h3>
         </div>
         {trendingNews.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Belum ada berita trending.</p>
@@ -99,7 +99,7 @@ export default function Sidebar() {
       >
         <div className="flex items-center gap-2 mb-4">
           <Sparkles size={20} className="text-[#35CE8D]" />
-          <h3 className="font-bold text-gray-900 dark:text-white">Highlight Berita</h3>
+          <h3 className="font-bold text-gray-900 dark:text-white">Highlight</h3>
         </div>
         {highlightNews.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Belum ada berita.</p>
@@ -182,7 +182,7 @@ export default function Sidebar() {
       {/* Footer Mini */}
       <div className="text-xs text-gray-400 px-2 space-y-1">
         <p>Tentang &middot; Kebijakan Privasi &middot; Ketentuan &middot; Iklan</p>
-        <p>&copy; 2026 KabarKini. All rights reserved.</p>
+        <p>&copy; 2026 InfoKodim. All rights reserved.</p>
       </div>
     </div>
   );
