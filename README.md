@@ -371,7 +371,7 @@ Dibuat dengan ❤️ untuk Kodim 1408 Makassar
 
 **Maintainer:** 
 - RezkyRobby
-- AurelioPalinoan
+- ArelioPalinoan
 - Yousran
 - Adrian Tri Putra
 
