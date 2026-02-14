@@ -20,17 +20,23 @@ Aplikasi Anda sekarang menggunakan **Hybrid Mode**:
 
 ## 🛠️ Setup Cloudinary
 
-### 1. Daftar Akun Cloudinary (Sudah Selesai ✅)
-Credentials sudah tersimpan di `.env`:
-```
-CLOUDINARY_CLOUD_NAME=dbcznk1py
-CLOUDINARY_API_KEY=535835757794837
-CLOUDINARY_API_SECRET=jfqByQnxn0BkkZOv5NTZLBPjr34
+### 1. Daftar Akun Cloudinary
+1. Buka [cloudinary.com](https://cloudinary.com) dan daftar (gratis)
+2. Setelah login, buka **Dashboard**
+3. Copy credentials berikut:
+   - **Cloud Name**
+   - **API Key**
+   - **API Secret**
+4. Simpan ke file `.env`:
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here
 ```
 
 ### 2. Verifikasi Dashboard
 1. Login ke [cloudinary.com](https://cloudinary.com)
-2. Pastikan folder `portal-berita-kodim` akan otomatis dibuat saat upload pertama
+2. Folder `portal-berita-kodim` akan otomatis dibuat saat upload pertama
 
 ---
 
@@ -113,15 +119,20 @@ Vercel akan otomatis deploy setelah push.
 ### 3. Set Environment Variables di Vercel
 Vercel Dashboard → Settings → Environment Variables → tambahkan:
 
-```
-CLOUDINARY_CLOUD_NAME=dbcznk1py
-CLOUDINARY_API_KEY=535835757794837
-CLOUDINARY_API_SECRET=jfqByQnxn0BkkZOv5NTZLBPjr34
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin12345
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_secure_password
 ```
 
-> **Penting**: `DATABASE_URL` sudah otomatis tersedia setelah buat Neon database, tidak perlu ditambahkan manual.
+> **⚠️ PENTING**: 
+> - Ganti semua `your_*` dengan credentials asli Anda
+> - Gunakan password yang kuat untuk admin
+> - Jangan share credentials di publik
+
+> **📝 INFO**: `DATABASE_URL` sudah otomatis tersedia setelah buat Neon database, tidak perlu ditambahkan manual.
 
 ### 4. Redeploy
 Setelah set environment variables, klik **Redeploy** di Vercel.
@@ -168,6 +179,21 @@ Buka URL production Anda dan test:
 
 ---
 
+## 🔒 Keamanan
+
+### JANGAN commit file berikut:
+- ❌ `.env` - sudah ada di .gitignore
+- ❌ `.env.production` - sudah ada di .gitignore
+- ✅ `.env.example` - boleh di-commit (hanya template)
+
+### Ganti Password Admin
+Ubah di Vercel Environment Variables:
+```
+ADMIN_PASSWORD=gunakan_password_yang_kuat_dan_unik
+```
+
+---
+
 ## 📁 File yang Berubah
 
 ### File Baru:
@@ -175,12 +201,13 @@ Buka URL production Anda dan test:
 - `database/schema.sql` - Database schema
 - `database/migrate.ts` - Migration script
 - `DEPLOYMENT.md` - Tutorial ini
+- `QUICKSTART.md` - Quick reference
+- `.env.example` - Template environment variables
 
 ### File yang Diupdate:
 - `src/pages/api/cms.ts` - Hybrid database (JSON + Neon)
 - `src/pages/api/upload.ts` - Hybrid upload (Local + Cloudinary)
 - `package.json` - Tambah script `db:migrate`
-- `.env` - Tambah Cloudinary & Database credentials
 
 ---
 

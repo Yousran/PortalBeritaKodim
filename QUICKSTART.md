@@ -19,19 +19,28 @@ npm run dev
 2. Tab **Storage** → **Create Database** → Pilih **Neon**
 3. Copy `DATABASE_URL` yang diberikan
 
-#### B. Set Environment Variables di Vercel
+#### B. Setup Cloudinary
+1. Daftar di [cloudinary.com](https://cloudinary.com) (gratis)
+2. Dashboard → Copy credentials:
+   - Cloud Name
+   - API Key
+   - API Secret
+
+#### C. Set Environment Variables di Vercel
 Go to: **Settings** → **Environment Variables**
 
 Tambahkan:
-```
-CLOUDINARY_CLOUD_NAME=dbcznk1py
-CLOUDINARY_API_KEY=535835757794837
-CLOUDINARY_API_SECRET=jfqByQnxn0BkkZOv5NTZLBPjr34
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin12345
+```env
+CLOUDINARY_CLOUD_NAME=isi_dari_cloudinary_dashboard
+CLOUDINARY_API_KEY=isi_dari_cloudinary_dashboard
+CLOUDINARY_API_SECRET=isi_dari_cloudinary_dashboard
+ADMIN_USERNAME=username_pilihan_anda
+ADMIN_PASSWORD=password_yang_kuat_dan_aman
 ```
 
-#### C. Migrate Data ke Database
+> **⚠️ PENTING**: Ganti semua nilai dengan credentials asli Anda. Jangan gunakan contoh di atas!
+
+#### D. Migrate Data ke Database
 Di terminal lokal:
 ```bash
 # Windows PowerShell
@@ -39,7 +48,7 @@ $env:DATABASE_URL="postgres://your-neon-url-from-vercel"
 npm run db:migrate
 ```
 
-#### D. Deploy
+#### E. Deploy
 ```bash
 git add .
 git commit -m "Setup cloud database"
@@ -82,8 +91,11 @@ Setelah database sudah setup, untuk update berita cukup:
 ### Q: Bisa test database cloud di lokal?
 **A**: Ya! Set `DATABASE_URL` di file `.env` lokal dengan connection string dari Vercel.
 
-### Q: Lupa password Cloudinary?
-**A**: Login ke [cloudinary.com](https://cloudinary.com) → Dashboard → copy credentials baru.
+### Q: Credentials apa saja yang harus di-setup?
+**A**: 
+- Cloudinary: Cloud Name, API Key, API Secret
+- Admin: Username dan Password (pilih yang kuat)
+- Database: Otomatis dari Vercel (DATABASE_URL)
 
 ---
 
@@ -92,7 +104,7 @@ Setelah database sudah setup, untuk update berita cukup:
 ### Upload gambar error di production
 ```bash
 # Cek environment variables di Vercel
-# Pastikan CLOUDINARY_* sudah diset
+# Pastikan CLOUDINARY_* sudah diset dengan benar
 ```
 
 ### Data berita tidak muncul di production
@@ -107,6 +119,28 @@ npm run db:migrate
 # Pastikan DATABASE_URL sudah di environment variables Vercel
 # Redeploy setelah set environment variables
 ```
+
+### Admin login tidak bisa
+```bash
+# Cek ADMIN_USERNAME dan ADMIN_PASSWORD di Vercel environment variables
+# Pastikan sesuai dengan yang Anda set
+```
+
+---
+
+## 🔒 Keamanan
+
+### ⚠️ JANGAN:
+- ❌ Share credentials Cloudinary
+- ❌ Commit file `.env` ke Git
+- ❌ Gunakan password admin yang lemah
+- ❌ Share DATABASE_URL di publik
+
+### ✅ LAKUKAN:
+- ✅ Gunakan password admin yang kuat
+- ✅ Simpan credentials di tempat aman
+- ✅ Update password secara berkala
+- ✅ Gunakan `.env.example` sebagai template
 
 ---
 

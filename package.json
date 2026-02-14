@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "db:migrate": "node --loader ts-node/esm database/migrate.ts"
+    "db:migrate": "node database/migrate.js"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.2",
