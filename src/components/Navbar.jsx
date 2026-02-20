@@ -39,7 +39,7 @@ export default function Navbar() {
               className="w-[48px] h-[48px] object-contain"
             />
             <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
-              Info<span className="text-[#35CE8D]">Kodim</span>
+              Portal<span className="text-[#35CE8D]">Berita</span><span className="text-sm font-normal text-gray-500 dark:text-gray-400">-KODIM 1408MKS</span>
             </span>
           </a>
 
