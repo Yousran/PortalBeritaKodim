@@ -34,13 +34,18 @@ export default function Navbar() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 no-underline">
             <img
-              src="/cropped-logo_kodim1408makassar-removebg-preview-1.png"
+              src="/kodimlogo.png"
               alt="Logo Kodim"
-              className="w-[48px] h-[48px] object-contain"
+              className="h-[44px] w-[44px] object-contain"
             />
-            <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
-              Portal<span className="text-[#35CE8D]">Berita</span><span className="text-sm font-normal text-gray-500 dark:text-gray-400">-KODIM 1408MKS</span>
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[15px] font-extrabold text-gray-900 dark:text-white tracking-tight">
+                KODIM 1408/MKS
+              </span>
+              <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 tracking-wide">
+                MAEIKI A'BULO SIBATANG
+              </span>
+            </div>
           </a>
 
           {/* Desktop Menu */}
