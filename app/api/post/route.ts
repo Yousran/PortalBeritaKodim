@@ -4,8 +4,146 @@ import slugify from "slugify";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
-import { createPostSchema } from "@/lib/schemas/post";
+import { createPostSchema, updatePostSchema } from "@/lib/schemas/post";
 export type { CreatePostInput } from "@/lib/schemas/post";
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Parameter id diperlukan" },
+        { status: 400 },
+      );
+    }
+
+    const post = await prisma.post.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        summary: true,
+        fullContent: true,
+        published: true,
+        categoryId: true,
+        category: { select: { id: true, name: true, color: true } },
+        authors: { select: { id: true, name: true, email: true, image: true } },
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: "Postingan tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(post);
+  } catch {
+    return NextResponse.json(
+      { error: "Gagal mengambil data postingan" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      return NextResponse.json(
+        { error: "Tidak terautentikasi" },
+        { status: 401 },
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Parameter id diperlukan" },
+        { status: 400 },
+      );
+    }
+
+    const body = await req.json();
+    const parsed = updatePostSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Validasi gagal",
+          details: z.flattenError(parsed.error).fieldErrors,
+        },
+        { status: 422 },
+      );
+    }
+
+    const { title, categoryId, authorIds, fullContent, summary, published } =
+      parsed.data;
+
+    // Regenerate slug only if title changed
+    const existing = await prisma.post.findUnique({
+      where: { id },
+      select: { title: true, slug: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Postingan tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
+    let slug = existing.slug;
+    if (title !== existing.title) {
+      const baseSlug = slugify(title, { lower: true, strict: true });
+      const conflicts = await prisma.post.findMany({
+        where: { slug: { startsWith: baseSlug }, NOT: { id } },
+        select: { slug: true },
+      });
+      const slugSet = new Set(conflicts.map((p) => p.slug));
+      slug = baseSlug;
+      let counter = 1;
+      while (slugSet.has(slug)) {
+        slug = `${baseSlug}-${counter++}`;
+      }
+    }
+
+    // Ensure current user is always an author
+    const allAuthorIds = Array.from(new Set([session.user.id, ...authorIds]));
+
+    const post = await prisma.post.update({
+      where: { id },
+      data: {
+        title,
+        slug,
+        summary,
+        fullContent,
+        categoryId,
+        published,
+        authors: {
+          set: allAuthorIds.map((aid) => ({ id: aid })),
+        },
+      },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        authors: { select: { id: true, name: true } },
+      },
+    });
+
+    return NextResponse.json(post);
+  } catch {
+    return NextResponse.json(
+      { error: "Gagal memperbarui postingan" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
