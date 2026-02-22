@@ -27,6 +27,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Role = "USER" | "EDITOR" | "ADMIN";
@@ -275,16 +282,20 @@ export default function UsersPage() {
           </div>
 
           {/* Role filter */}
-          <select
-            value={roleFilter}
-            onChange={(e) => handleRoleFilter(e.target.value)}
-            className="border-input bg-background h-9 rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 sm:w-40"
+          <Select
+            value={roleFilter || "ALL"}
+            onValueChange={(val) => handleRoleFilter(val === "ALL" ? "" : val)}
           >
-            <option value="">Semua Role</option>
-            <option value="ADMIN">Admin</option>
-            <option value="EDITOR">Editor</option>
-            <option value="USER">User</option>
-          </select>
+            <SelectTrigger className="sm:w-40">
+              <SelectValue placeholder="Semua Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Semua Role</SelectItem>
+              <SelectItem value="ADMIN">Admin</SelectItem>
+              <SelectItem value="EDITOR">Editor</SelectItem>
+              <SelectItem value="USER">User</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table card */}
@@ -340,18 +351,22 @@ export default function UsersPage() {
 
                   {/* Role change select */}
                   <div className="w-28 flex items-center gap-1.5">
-                    <select
+                    <Select
                       value={user.role}
                       disabled={updatingId === user.id}
-                      onChange={(e) =>
-                        handleRoleChange(user, e.target.value as Role)
+                      onValueChange={(val) =>
+                        handleRoleChange(user, val as Role)
                       }
-                      className="border-input bg-background h-8 w-full rounded-md border px-2 py-1 text-xs shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
                     >
-                      <option value="USER">User</option>
-                      <option value="EDITOR">Editor</option>
-                      <option value="ADMIN">Admin</option>
-                    </select>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USER">User</SelectItem>
+                        <SelectItem value="EDITOR">Editor</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
                     {updatingId === user.id && (
                       <Loader2 className="size-3.5 shrink-0 animate-spin text-muted-foreground" />
                     )}

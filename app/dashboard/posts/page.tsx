@@ -28,6 +28,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toPascalCase } from "@/utils/string";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -287,29 +294,39 @@ export default function PostsPage() {
           </div>
 
           {/* Category filter */}
-          <select
-            value={categoryFilter}
-            onChange={(e) => handleCategoryFilter(e.target.value)}
-            className="border-input bg-background h-9 rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 sm:w-44"
+          <Select
+            value={categoryFilter || "ALL"}
+            onValueChange={(val) =>
+              handleCategoryFilter(val === "ALL" ? "" : val)
+            }
           >
-            <option value="">Semua Kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {toPascalCase(c.name)}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="sm:w-44">
+              <SelectValue placeholder="Semua Kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Semua Kategori</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {toPascalCase(c.name)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           {/* Status filter */}
-          <select
+          <Select
             value={statusFilter}
-            onChange={(e) => handleStatusFilter(e.target.value)}
-            className="border-input bg-background h-9 rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 sm:w-36"
+            onValueChange={(val) => handleStatusFilter(val)}
           >
-            <option value="all">Semua Status</option>
-            <option value="published">Terbit</option>
-            <option value="draft">Draft</option>
-          </select>
+            <SelectTrigger className="sm:w-36">
+              <SelectValue placeholder="Semua Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Status</SelectItem>
+              <SelectItem value="published">Terbit</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table card */}

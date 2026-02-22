@@ -17,6 +17,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { updatePostSchema, UpdatePostFormErrors } from "@/lib/schemas/post";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Category {
   id: string;
@@ -120,7 +127,10 @@ export default function EditPostPage() {
           setCategories(json.data ?? json);
         }
 
-        if (userRes.ok) setUsers(await userRes.json());
+        if (userRes.ok) {
+          const json = await userRes.json();
+          setUsers(json.data ?? json);
+        }
       } finally {
         setLoadingData(false);
       }
@@ -312,24 +322,27 @@ export default function EditPostPage() {
                 htmlFor="categoryId"
                 error={errors.categoryId}
               >
-                <select
-                  id="categoryId"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className={cn(
-                    "border-input bg-background h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow]",
-                    "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-                    "disabled:cursor-not-allowed disabled:opacity-50",
-                    errors.categoryId && "border-destructive",
-                  )}
+                <Select
+                  value={categoryId || "NONE"}
+                  onValueChange={(val) =>
+                    setCategoryId(val === "NONE" ? "" : val)
+                  }
                 >
-                  <option value="">Pilih kategori</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger
+                    id="categoryId"
+                    className={cn(errors.categoryId && "border-destructive")}
+                  >
+                    <SelectValue placeholder="Pilih kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NONE">Pilih kategori</SelectItem>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormSection>
 
               {/* ── Authors ── */}
