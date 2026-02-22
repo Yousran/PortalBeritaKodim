@@ -34,6 +34,8 @@ export async function GET(req: NextRequest) {
           id: true,
           title: true,
           slug: true,
+          summary: true,
+          image: true,
           published: true,
           views: true,
           createdAt: true,

@@ -6,7 +6,7 @@ import { CategoryBadge } from "@/components/custom/category-badge";
 export { CategoryBadge };
 
 export interface NewsCardPost {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   excerpt?: string;
