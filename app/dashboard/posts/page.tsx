@@ -194,7 +194,7 @@ export default function PostsPage() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/posts?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/post?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmPost(null);
         const isLastOnPage = data?.data.length === 1 && page > 1;
