@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { createCategorySchema } from "@/lib/schemas/category";
 
+type SessionUser = typeof auth.$Infer.Session.user;
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -14,6 +16,10 @@ export async function POST(req: NextRequest) {
         { error: "Tidak terautentikasi" },
         { status: 401 },
       );
+    }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -65,6 +71,10 @@ export async function DELETE(req: NextRequest) {
         { error: "Tidak terautentikasi" },
         { status: 401 },
       );
+    }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

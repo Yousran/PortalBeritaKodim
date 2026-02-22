@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
+import { ROLES } from "@/lib/schemas/role";
+import type { Role } from "@/lib/schemas/role";
+
+type SessionUser = typeof auth.$Infer.Session.user;
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,6 +16,12 @@ export async function GET(req: NextRequest) {
         { status: 401 },
       );
     }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
+    }
+
+    const isAdmin = userRole === "ADMIN";
 
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
@@ -20,9 +30,22 @@ export async function GET(req: NextRequest) {
       Math.max(1, parseInt(searchParams.get("limit") ?? "10", 10)),
     );
     const search = searchParams.get("q")?.trim() ?? "";
-    const role = searchParams.get("role")?.trim() ?? "";
+    // Admins can filter by any role; editors are always restricted to ADMIN|EDITOR
+    const roleParam = searchParams.get("role")?.trim() ?? "";
+
+    const allowedRoles: Role[] = isAdmin ? [...ROLES] : ["ADMIN", "EDITOR"];
+
+    // When the caller requests a specific role, intersect with allowedRoles
+    const resolvedRole =
+      roleParam && allowedRoles.includes(roleParam as Role)
+        ? (roleParam as Role)
+        : undefined;
 
     const where = {
+      // Non-admins are always restricted to privileged roles
+      ...(!isAdmin ? { role: { in: allowedRoles } } : {}),
+      // Apply caller-supplied role filter on top (admin only, or intersected above)
+      ...(resolvedRole ? { role: resolvedRole } : {}),
       ...(search
         ? {
             OR: [
@@ -31,7 +54,6 @@ export async function GET(req: NextRequest) {
             ],
           }
         : {}),
-      ...(role ? { role: role as "USER" | "ADMIN" | "EDITOR" } : {}),
     };
 
     const [users, total] = await Promise.all([

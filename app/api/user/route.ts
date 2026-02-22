@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
+import { updateUserRoleSchema } from "@/lib/schemas/role";
+import type { Role } from "@/lib/schemas/role";
 
-const VALID_ROLES = ["USER", "ADMIN", "EDITOR"] as const;
-type Role = (typeof VALID_ROLES)[number];
+type SessionUser = typeof auth.$Infer.Session.user;
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -15,23 +17,25 @@ export async function PATCH(req: NextRequest) {
         { status: 401 },
       );
     }
+    const userRole = (session.user as SessionUser).role;
+    if (userRole !== "ADMIN") {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
+    }
 
     const body = await req.json();
-    const { id, role } = body as { id?: string; role?: string };
+    const parsed = updateUserRoleSchema.safeParse(body);
 
-    if (!id) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Parameter id diperlukan" },
+        {
+          error: "Validasi gagal",
+          details: z.flattenError(parsed.error).fieldErrors,
+        },
         { status: 400 },
       );
     }
 
-    if (!role || !VALID_ROLES.includes(role as Role)) {
-      return NextResponse.json(
-        { error: "Role tidak valid. Pilih USER, EDITOR, atau ADMIN." },
-        { status: 400 },
-      );
-    }
+    const { id, role } = parsed.data;
 
     const user = await prisma.user.update({
       where: { id },
@@ -56,6 +60,10 @@ export async function DELETE(req: NextRequest) {
         { error: "Tidak terautentikasi" },
         { status: 401 },
       );
+    }
+    const userRole = (session.user as SessionUser).role;
+    if (userRole !== "ADMIN") {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

@@ -74,7 +74,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const userRole = session?.user?.role as string | undefined;
+  const userRole = session?.user?.role;
   const isPrivileged = userRole === "EDITOR" || userRole === "ADMIN";
   const isAdmin = userRole === "ADMIN";
 

@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { createPostSchema, updatePostSchema } from "@/lib/schemas/post";
 export type { CreatePostInput } from "@/lib/schemas/post";
 
+type SessionUser = typeof auth.$Infer.Session.user;
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -58,6 +60,10 @@ export async function PUT(req: NextRequest) {
         { error: "Tidak terautentikasi" },
         { status: 401 },
       );
+    }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -154,6 +160,10 @@ export async function POST(req: NextRequest) {
         { status: 401 },
       );
     }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
+    }
 
     const body = await req.json();
     const parsed = createPostSchema.safeParse(body);
@@ -230,6 +240,10 @@ export async function DELETE(req: NextRequest) {
         { error: "Tidak terautentikasi" },
         { status: 401 },
       );
+    }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
