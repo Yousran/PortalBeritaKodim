@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   description:
     "Portal berita resmi Kodim 1415 untuk informasi terkini, artikel mendalam, dan liputan eksklusif seputar kegiatan militer, pertahanan, dan keamanan di wilayah Sulawesi Selatan.",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon-16x16.png",
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 

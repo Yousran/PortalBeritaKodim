@@ -19,7 +19,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Image
-                src="/cropped-logo_kodim1408makassar-removebg-preview-1.png"
+                src="/logo.png"
                 alt="Logo Kodim 1408 Makassar"
                 width={48}
                 height={48}
