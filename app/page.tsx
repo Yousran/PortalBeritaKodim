@@ -3,11 +3,11 @@ import Footer from "@/components/custom/footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { NewsCard, type NewsCardPost } from "@/components/custom/news-card";
 import { CategoryBadge } from "@/components/custom/category-badge";
+import { BreakingNews } from "@/components/custom/breaking-news";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -48,7 +48,7 @@ const highlightPosts: NewsCardPost[] = [
     image: "https://picsum.photos/seed/kodim7/800/500",
   },
   {
-    id: "fsdf4",
+    id: "fsdf",
     slug: "film-nusantara-karya-sineas-lokal",
     title: 'Film "Nusantara" Karya Sineas Lokal Raih Penghargaan Internasional',
     excerpt:
@@ -59,7 +59,7 @@ const highlightPosts: NewsCardPost[] = [
     image: "https://picsum.photos/seed/kodim8/800/500",
   },
   {
-    id: "fsdf5",
+    id: "fsdf4",
     slug: "timnas-indonesia-lolos-piala-dunia",
     title:
       "Timnas Indonesia Lolos ke Piala Dunia 2026: Sejarah Baru Sepak Bola",
@@ -136,27 +136,13 @@ export default async function BerandaPage() {
       <Navbar variant="public" />
       <div className="h-16" />
 
-      {/* Breaking News Banner */}
-      <div className="bg-red-600 px-4 py-2.5">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
-          <Badge
-            variant="outline"
-            className="shrink-0 border-2 border-white text-xs font-extrabold uppercase tracking-widest text-white"
-          >
-            Breaking
-          </Badge>
-          <p className="truncate text-sm font-medium text-white">
-            Website sudah hampir jadi!
-          </p>
-        </div>
-      </div>
-
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex gap-6">
           {/* Left — All Posts Grid */}
           <div className="flex min-w-0 flex-1 flex-col gap-6">
             <div className="grid gap-5">
+              <BreakingNews text="Website sudah hampir jadi!" />
               {allPosts.map((post, i) => (
                 <NewsCard key={post.id} post={post} priority={i === 0} />
               ))}
