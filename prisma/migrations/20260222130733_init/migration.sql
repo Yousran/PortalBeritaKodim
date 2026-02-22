@@ -5,7 +5,6 @@ CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN', 'EDITOR');
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
@@ -123,9 +122,6 @@ CREATE TABLE "_PostAuthors" (
 
     CONSTRAINT "_PostAuthors_AB_pkey" PRIMARY KEY ("A","B")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "user_slug_key" ON "user"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
