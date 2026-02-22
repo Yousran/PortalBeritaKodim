@@ -171,7 +171,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
-                      <Link href={`/profil/${session.user.name}`}>
+                      <Link href={`/profil/${session.user.id}`}>
                         <User />
                         Profil
                       </Link>

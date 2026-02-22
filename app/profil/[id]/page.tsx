@@ -1,0 +1,532 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Edit2,
+  FileText,
+  Lock,
+  Mail,
+  Save,
+  Shield,
+  X,
+  AlertCircle,
+} from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import Navbar from "@/components/custom/navbar";
+import { getInitials } from "@/utils/string";
+import { cn } from "@/lib/utils";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface ProfileData {
+  id: string;
+  name: string;
+  image: string | null;
+  role: "USER" | "EDITOR" | "ADMIN";
+  createdAt: string;
+  postCount: number;
+  // only present for own profile
+  email: string | null;
+  emailVerified: boolean | null;
+  providers: string[];
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "Administrator",
+  EDITOR: "Editor",
+  USER: "Pengguna",
+};
+
+const ROLE_STYLES: Record<string, string> = {
+  ADMIN: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  EDITOR: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  USER: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+};
+
+const PROVIDER_LABELS: Record<string, string> = {
+  google: "Google",
+  github: "GitHub",
+  credential: "Email & Password",
+};
+
+const PROVIDER_ICONS: Record<string, string> = {
+  google: "/icons/google.svg",
+  github: "/icons/github.svg",
+};
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// ─── Profile Page ─────────────────────────────────────────────────────────────
+
+export default function ProfilPage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: session, isPending: sessionLoading } = authClient.useSession();
+
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  // start loading=true so the spinner shows immediately on mount
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  // track which id was last fetched to avoid stale closure issues
+  const lastFetchedId = useRef<string | null>(null);
+
+  // Edit state
+  const [editing, setEditing] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  const isOwner = !sessionLoading && session?.user?.id === id;
+
+  // ── Fetch profile ────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!id) return;
+    // Skip if already fetched for this id
+    if (lastFetchedId.current === id) return;
+    lastFetchedId.current = id;
+
+    fetch(`/api/profile/${id}`)
+      .then(async (res) => {
+        if (res.status === 404) {
+          setNotFound(true);
+          return;
+        }
+        const data: ProfileData = await res.json();
+        setProfile(data);
+        setNameInput(data.name);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  // focus input when entering edit mode
+  useEffect(() => {
+    if (editing) setTimeout(() => nameRef.current?.focus(), 50);
+  }, [editing]);
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+
+  function handleCancelEdit() {
+    setEditing(false);
+    setNameInput(profile?.name ?? "");
+    setSaveError(null);
+    setSaveSuccess(false);
+  }
+
+  async function handleSave() {
+    if (!profile) return;
+    const trimmed = nameInput.trim();
+    if (trimmed.length < 2) {
+      setSaveError("Nama minimal 2 karakter.");
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    // Use better-auth's built-in updateUser to keep session in sync
+    const result = await authClient.updateUser({ name: trimmed });
+
+    if (result.error) {
+      setSaveError(result.error.message ?? "Gagal menyimpan perubahan.");
+      setSaving(false);
+      return;
+    }
+
+    // Also hit our own API to be consistent
+    const res = await fetch(`/api/profile/${profile.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: trimmed }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      setSaveError(err.error ?? "Gagal menyimpan perubahan.");
+      setSaving(false);
+      return;
+    }
+
+    const updated: Pick<ProfileData, "name"> = await res.json();
+    setProfile((prev) => (prev ? { ...prev, name: updated.name } : prev));
+    setEditing(false);
+    setSaveSuccess(true);
+    setSaving(false);
+    setTimeout(() => setSaveSuccess(false), 4000);
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  if (loading || sessionLoading) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+        <Navbar />
+        <div className="flex min-h-[80vh] items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="size-10 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-700 dark:border-zinc-700 dark:border-t-zinc-300" />
+            <p className="text-sm text-zinc-500">Memuat profil…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !profile) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+        <Navbar />
+        <div className="flex min-h-[80vh] flex-col items-center justify-center gap-4 text-center">
+          <AlertCircle className="size-12 text-zinc-400" />
+          <h2 className="text-2xl font-bold text-zinc-700 dark:text-zinc-200">
+            Pengguna tidak ditemukan
+          </h2>
+          <p className="text-sm text-zinc-500">
+            Profil yang kamu cari tidak ada atau sudah dihapus.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <Navbar />
+
+      <main className="mx-auto max-w-3xl px-4 py-24 md:px-8">
+        {/* ── Hero / Avatar Section ───────────────────────────────────────── */}
+        <div className="mb-8 flex flex-col items-center gap-4 text-center">
+          {/* Avatar with coming-soon overlay for owners */}
+          <div className="group relative">
+            <Avatar className="size-28 ring-4 ring-white shadow-lg dark:ring-zinc-800">
+              <AvatarImage
+                src={profile.image ?? undefined}
+                alt={profile.name}
+              />
+              <AvatarFallback className="bg-zinc-200 text-2xl font-bold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200">
+                {getInitials(profile.name)}
+              </AvatarFallback>
+            </Avatar>
+
+            {isOwner && (
+              <div
+                title="Ganti foto profil — segera hadir"
+                className="absolute inset-0 flex cursor-not-allowed flex-col items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+              >
+                <Lock className="size-5 text-white" />
+                <span className="mt-1 text-[10px] font-semibold text-white/90">
+                  Segera Hadir
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Name */}
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              {profile.name}
+            </h1>
+
+            {/* Role badge */}
+            <span
+              className={cn(
+                "mt-1 rounded-full px-3 py-0.5 text-xs font-semibold",
+                ROLE_STYLES[profile.role],
+              )}
+            >
+              <Shield className="mr-1 inline-block size-3" />
+              {ROLE_LABELS[profile.role] ?? profile.role}
+            </span>
+          </div>
+
+          {/* Stats row */}
+          <div className="mt-2 flex items-center gap-6 text-sm text-zinc-500 dark:text-zinc-400">
+            <span className="flex items-center gap-1.5">
+              <FileText className="size-4" />
+              {profile.postCount} postingan
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CalendarDays className="size-4" />
+              Bergabung {formatDate(profile.createdAt)}
+            </span>
+          </div>
+
+          {/* Success banner */}
+          {saveSuccess && (
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+              <CheckCircle2 className="size-4 shrink-0" />
+              Profil berhasil diperbarui.
+            </div>
+          )}
+        </div>
+
+        <div className="grid gap-6">
+          {/* ── Profile Info Card ──────────────────────────────────────────── */}
+          <Card>
+            <CardHeader className="border-b pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Informasi Profil</CardTitle>
+                  <CardDescription className="mt-1">
+                    {isOwner
+                      ? "Kelola informasi akun Anda."
+                      : "Informasi publik pengguna ini."}
+                  </CardDescription>
+                </div>
+                {isOwner && !editing && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditing(true)}
+                    className="gap-1.5"
+                  >
+                    <Edit2 className="size-3.5" />
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+
+            <CardContent className="grid gap-5 pt-4">
+              {/* Name field */}
+              <div className="grid gap-1.5">
+                <Label htmlFor="name">Nama Lengkap</Label>
+                {editing ? (
+                  <div className="flex gap-2">
+                    <Input
+                      id="name"
+                      ref={nameRef}
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSave();
+                        if (e.key === "Escape") handleCancelEdit();
+                      }}
+                      placeholder="Nama lengkap"
+                      aria-invalid={!!saveError}
+                      className="flex-1"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="gap-1.5"
+                    >
+                      {saving ? (
+                        <span className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      ) : (
+                        <Save className="size-3.5" />
+                      )}
+                      Simpan
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                    {profile.name}
+                  </p>
+                )}
+                {saveError && (
+                  <p className="text-xs text-red-500">{saveError}</p>
+                )}
+              </div>
+
+              {/* Email (owner only) */}
+              {isOwner && profile.email && (
+                <>
+                  <Separator />
+                  <div className="grid gap-1.5">
+                    <Label className="flex items-center gap-1.5">
+                      <Mail className="size-3.5 text-zinc-400" />
+                      Email
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                        {profile.email}
+                      </p>
+                      {profile.emailVerified ? (
+                        <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                          <CheckCircle2 className="size-3" />
+                          Terverifikasi
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                          <Clock className="size-3" />
+                          Belum terverifikasi
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ── Profile Picture Card (coming soon – owner only) ─────────── */}
+          {isOwner && (
+            <Card>
+              <CardHeader className="border-b pb-4">
+                <CardTitle>Foto Profil</CardTitle>
+                <CardDescription>
+                  Ganti foto profil Anda untuk personalisasi akun.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col items-start gap-4 pt-4 sm:flex-row sm:items-center">
+                <Avatar className="size-16 ring-2 ring-zinc-200 dark:ring-zinc-700">
+                  <AvatarImage
+                    src={profile.image ?? undefined}
+                    alt={profile.name}
+                  />
+                  <AvatarFallback className="bg-zinc-200 text-lg font-bold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200">
+                    {getInitials(profile.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    Format yang didukung: JPG, PNG, GIF (maks 2 MB).
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Foto profil saat ini menggunakan gambar dari akun yang
+                    terhubung (jika ada), atau inisial nama Anda.
+                  </p>
+                </div>
+                <div className="relative">
+                  <Button disabled className="gap-1.5 cursor-not-allowed">
+                    <Lock className="size-3.5" />
+                    Unggah Foto
+                  </Button>
+                  <span className="absolute -top-2 -right-2 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold text-white shadow">
+                    Segera
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* ── Linked Accounts Card (owner only) ───────────────────────── */}
+          {isOwner && profile.providers.length > 0 && (
+            <Card>
+              <CardHeader className="border-b pb-4">
+                <CardTitle>Metode Login</CardTitle>
+                <CardDescription>
+                  Akun yang terhubung dengan profil Anda.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 pt-4">
+                {profile.providers.map((provider) => (
+                  <div
+                    key={provider}
+                    className="flex items-center gap-3 rounded-lg border bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800/50"
+                  >
+                    {PROVIDER_ICONS[provider] ? (
+                      <Image
+                        src={PROVIDER_ICONS[provider]}
+                        alt={PROVIDER_LABELS[provider] ?? provider}
+                        width={20}
+                        height={20}
+                        className="shrink-0"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display =
+                            "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="size-5 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                    )}
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                      {PROVIDER_LABELS[provider] ?? provider}
+                    </span>
+                    <span className="ml-auto flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="size-3.5" />
+                      Terhubung
+                    </span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* ── Recent Activity Placeholder ─────────────────────────────── */}
+          <Card>
+            <CardHeader className="border-b pb-4">
+              <CardTitle>Statistik</CardTitle>
+              <CardDescription>Ringkasan aktivitas pengguna.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4 pt-4 sm:grid-cols-3">
+              <StatBox
+                label="Total Postingan"
+                value={profile.postCount}
+                icon={<FileText className="size-5 text-blue-500" />}
+              />
+              <StatBox
+                label="Peran"
+                value={ROLE_LABELS[profile.role] ?? profile.role}
+                icon={<Shield className="size-5 text-purple-500" />}
+              />
+              <StatBox
+                label="Bergabung"
+                value={formatDate(profile.createdAt)}
+                icon={<CalendarDays className="size-5 text-amber-500" />}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ─── StatBox helper ───────────────────────────────────────────────────────────
+function StatBox({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border bg-white p-4 shadow-xs dark:border-zinc-700 dark:bg-zinc-800/60">
+      {icon}
+      <p className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
+        {value}
+      </p>
+      <p className="text-xs text-zinc-500">{label}</p>
+    </div>
+  );
+}
