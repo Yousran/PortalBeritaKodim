@@ -12,67 +12,6 @@ import { PostsGrid } from "@/components/custom/posts-grid";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-const highlightPosts: NewsCardPost[] = [
-  {
-    id: "fsfdf",
-    slug: "test-upload-gambar",
-    title: "Test Upload Gambar",
-    excerpt:
-      "Kodim 1408/MKS berhasil mengintegrasikan sistem unggah gambar baru ke dalam portal berita resmi satuan. Sistem ini memudahkan pengelola konten dalam menampilkan dokumentasi kegiatan secara cepat dan efisien.",
-    category: { name: "Teknologi", color: "#0ea5e9" },
-    author: "Anonim",
-    authorAvatar: "https://i.pravatar.cc/40?img=3",
-    date: "14 Februari 2026",
-    time: "17.19",
-    image: "https://picsum.photos/seed/kodim1/800/500",
-  },
-  {
-    id: "fsdf2",
-    slug: "pelaksanaan-program-sppg",
-    title: "Pelaksanaan Program SPPG di Wilayah Kodim 1408/MKS",
-    excerpt:
-      "Program SPPG dilaksanakan di seluruh wilayah Kodim 1408/MKS sebagai upaya peningkatan kesejahteraan masyarakat di Sulawesi Selatan.",
-    category: { name: "Teknologi", color: "#0ea5e9" },
-    author: "Redaksi",
-    date: "13 Februari 2026",
-    image: "https://picsum.photos/seed/kodim6/800/500",
-  },
-  {
-    id: "fsdf3",
-    slug: "ruu-perlindungan-data-pribadi",
-    title: "RUU Perlindungan Data Pribadi Resmi Berlaku, Sanksi Tegas Menanti",
-    excerpt:
-      "Pemerintah resmi memberlakukan RUU Perlindungan Data Pribadi dengan sanksi yang lebih tegas bagi pelanggar privasi data warga negara.",
-    category: { name: "Politik", color: "#ef4444" },
-    author: "Redaksi",
-    date: "12 Februari 2026",
-    image: "https://picsum.photos/seed/kodim7/800/500",
-  },
-  {
-    id: "fsdf",
-    slug: "film-nusantara-karya-sineas-lokal",
-    title: 'Film "Nusantara" Karya Sineas Lokal Raih Penghargaan Internasional',
-    excerpt:
-      'Film berjudul "Nusantara" karya sutradara muda asal Makassar berhasil meraih penghargaan bergengsi di festival film internasional.',
-    category: { name: "Hiburan", color: "#a855f7" },
-    author: "Redaksi",
-    date: "11 Februari 2026",
-    image: "https://picsum.photos/seed/kodim8/800/500",
-  },
-  {
-    id: "fsdf4",
-    slug: "timnas-indonesia-lolos-piala-dunia",
-    title:
-      "Timnas Indonesia Lolos ke Piala Dunia 2026: Sejarah Baru Sepak Bola",
-    excerpt:
-      "Untuk pertama kalinya dalam sejarah, Timnas Indonesia berhasil lolos ke Piala Dunia 2026 setelah mengalahkan lawan di babak kualifikasi.",
-    category: { name: "Olahraga", color: "#f97316" },
-    author: "Redaksi",
-    date: "10 Februari 2026",
-    image: "https://picsum.photos/seed/kodim9/800/500",
-  },
-];
-
 type ApiPost = {
   id: string;
   title: string;
@@ -101,11 +40,14 @@ function formatDate(iso: string) {
 }
 
 export default async function BerandaPage() {
-  const [postsRes, kategorisRes] = await Promise.all([
+  const [postsRes, kategorisRes, highlightRes] = await Promise.all([
     fetch(`${BASE_URL}/api/posts?status=published&limit=20`, {
       cache: "no-store",
     }),
     fetch(`${BASE_URL}/api/categories?limit=100`, { cache: "no-store" }),
+    fetch(`${BASE_URL}/api/posts?status=published&isHighlight=true&limit=5`, {
+      cache: "no-store",
+    }),
   ]);
 
   const postsJson = postsRes.ok
@@ -113,6 +55,9 @@ export default async function BerandaPage() {
     : { data: [], totalPages: 1 };
   const kategorisJson = kategorisRes.ok
     ? await kategorisRes.json()
+    : { data: [] };
+  const highlightJson = highlightRes.ok
+    ? await highlightRes.json()
     : { data: [] };
 
   const allPosts: NewsCardPost[] = (postsJson.data as ApiPost[]).map(
@@ -132,6 +77,22 @@ export default async function BerandaPage() {
     }),
   );
 
+  const highlightPosts: NewsCardPost[] = (highlightJson.data as ApiPost[]).map(
+    (post) => ({
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.summary ?? undefined,
+      category: {
+        name: post.category?.name ?? "Umum",
+        color: post.category?.color,
+      },
+      author: post.authors[0]?.name ?? "Redaksi",
+      authorAvatar: post.authors[0]?.image ?? undefined,
+      date: formatDate(post.createdAt),
+      image: post.image ?? `https://picsum.photos/seed/${post.slug}/800/500`,
+    }),
+  );
   const dbKategori = kategorisJson.data as ApiCategory[];
   const totalPages: number = postsJson.totalPages ?? 1;
 

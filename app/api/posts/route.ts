@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("q")?.trim() ?? "";
     const categoryId = searchParams.get("categoryId")?.trim() ?? "";
     const status = searchParams.get("status") ?? "all"; // "all" | "published" | "draft"
+    const isHighlight = searchParams.get("isHighlight");
 
     const where = {
       ...(search
@@ -23,6 +24,11 @@ export async function GET(req: NextRequest) {
         ? { published: true }
         : status === "draft"
           ? { published: false }
+          : {}),
+      ...(isHighlight === "true"
+        ? { isHighlight: true }
+        : isHighlight === "false"
+          ? { isHighlight: false }
           : {}),
     };
 
