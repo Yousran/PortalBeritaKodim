@@ -3,12 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useSyncExternalStore, useState } from "react";
+import { useState } from "react";
 import {
-  Sun,
-  Moon,
-  Monitor,
   LogOut,
   User,
   LogIn,
@@ -24,6 +20,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "./theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 // --- Types ---
 interface NavLink {
@@ -63,47 +60,6 @@ const dashboardIcons: Record<string, React.ElementType> = {
   "/dashboard/categories": Tag,
   "/dashboard/messages": MessageSquare,
 };
-
-// --- Theme Cycle Button ---
-function useHasMounted() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-}
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const mounted = useHasMounted();
-
-  if (!mounted) return <div className="size-9" />;
-
-  const cycle = () => {
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("system");
-    else setTheme("light");
-  };
-
-  const Icon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
-
-  return (
-    <Button variant="ghost" size="icon" onClick={cycle} title="Ganti tema">
-      <Icon className="size-4.5" />
-    </Button>
-  );
-}
-
-// --- User Initials Helper ---
-function getInitials(name?: string | null) {
-  if (!name) return "U";
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-}
 
 // --- Main Navbar ---
 interface NavbarProps {
