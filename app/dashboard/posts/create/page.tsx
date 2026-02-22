@@ -1,0 +1,347 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { ArrowLeft, ImageOff, Loader2 } from "lucide-react";
+import Link from "next/link";
+import Navbar from "@/components/custom/navbar";
+import {
+  UserMultiSelect,
+  SelectableUser,
+} from "@/components/custom/user-multi-select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+import { createPostSchema, CreatePostFormErrors } from "@/lib/schemas/post";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  color: string | null;
+}
+
+// ── Reusable form-section wrapper ─────────────────────────────────────────────
+function FormSection({
+  label,
+  htmlFor,
+  error,
+  children,
+  hint,
+}: {
+  label: string;
+  htmlFor?: string;
+  error?: string[];
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={htmlFor} className="text-sm font-semibold">
+        {label}
+      </Label>
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {children}
+      {error?.map((e) => (
+        <p key={e} className="text-xs text-destructive">
+          {e}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+export default function CreatePostPage() {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [users, setUsers] = useState<SelectableUser[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Form state
+  const [title, setTitle] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [authorIds, setAuthorIds] = useState<string[]>([]);
+  const [fullContent, setFullContent] = useState("");
+  const [summary, setSummary] = useState("");
+
+  const [errors, setErrors] = useState<CreatePostFormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const publishIntent = useRef(false);
+
+  // Seed current user into authorIds once session is available
+  useEffect(() => {
+    if (session?.user?.id) {
+      setAuthorIds((prev) =>
+        prev.includes(session.user.id) ? prev : [session.user.id, ...prev],
+      );
+    }
+  }, [session?.user?.id]);
+
+  // Fetch categories + users on mount
+  useEffect(() => {
+    async function load() {
+      try {
+        const [catRes, userRes] = await Promise.all([
+          fetch("/api/categories"),
+          fetch("/api/users"),
+        ]);
+        if (catRes.ok) setCategories(await catRes.json());
+        if (userRes.ok) setUsers(await userRes.json());
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    load();
+  }, []);
+
+  // ── Additional author IDs (exclude current user — handled by API) ──────────
+  const additionalAuthorIds = authorIds.filter(
+    (id) => id !== session?.user?.id,
+  );
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setServerError("");
+
+    const parsed = createPostSchema.safeParse({
+      title,
+      categoryId,
+      additionalAuthorIds,
+      fullContent,
+      summary,
+      published: publishIntent.current,
+    });
+
+    if (!parsed.success) {
+      setErrors(
+        z.flattenError(parsed.error).fieldErrors as CreatePostFormErrors,
+      );
+      return;
+    }
+    setErrors({});
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        setServerError(json.error ?? "Terjadi kesalahan, coba lagi.");
+        return;
+      }
+
+      router.push("/dashboard/posts");
+    } catch {
+      setServerError("Tidak dapat menghubungi server.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <Navbar variant="dashboard" />
+
+      {/* Sticky top bar */}
+      <div className="fixed left-0 right-0 top-16 z-40 border-b border-zinc-200 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="icon" className="shrink-0">
+              <Link href="/dashboard/posts">
+                <ArrowLeft className="size-4" />
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-sm font-bold text-zinc-900 dark:text-white">
+                Buat Postingan Baru
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Isi semua kolom yang diperlukan sebelum menerbitkan
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              form="create-post-form"
+              type="submit"
+              variant="outline"
+              disabled={submitting || loadingData}
+              size="sm"
+              onClick={() => {
+                publishIntent.current = false;
+              }}
+            >
+              {submitting && !publishIntent.current && (
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+              )}
+              Simpan Draft
+            </Button>
+            <Button
+              form="create-post-form"
+              type="submit"
+              disabled={submitting || loadingData}
+              size="sm"
+              onClick={() => {
+                publishIntent.current = true;
+              }}
+            >
+              {submitting && publishIntent.current && (
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+              )}
+              Terbitkan
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Form */}
+      <main className="pt-36 pb-16">
+        <form
+          id="create-post-form"
+          onSubmit={handleSubmit}
+          className="mx-auto flex max-w-3xl flex-col gap-8 px-4"
+        >
+          {/* Server error */}
+          {serverError && (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {serverError}
+            </div>
+          )}
+
+          {/* ── Title ── */}
+          <FormSection label="Judul" htmlFor="title" error={errors.title}>
+            <Input
+              id="title"
+              placeholder="Masukkan judul berita..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={cn("text-base", errors.title && "border-destructive")}
+            />
+          </FormSection>
+
+          {/* ── Image (placeholder) ── */}
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-sm font-semibold">Gambar Utama</Label>
+            <div className="flex h-44 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-100 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/50">
+              <ImageOff className="size-8 opacity-50" />
+              <p className="text-sm font-medium">
+                Upload gambar tersedia segera
+              </p>
+              <p className="text-xs opacity-70">
+                Fitur ini akan ditambahkan berikutnya
+              </p>
+            </div>
+          </div>
+
+          {/* ── Category ── */}
+          <FormSection
+            label="Kategori"
+            htmlFor="categoryId"
+            error={errors.categoryId}
+          >
+            <select
+              id="categoryId"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              disabled={loadingData}
+              className={cn(
+                "border-input bg-background h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow]",
+                "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                "disabled:cursor-not-allowed disabled:opacity-50",
+                errors.categoryId && "border-destructive",
+              )}
+            >
+              <option value="">
+                {loadingData ? "Memuat kategori..." : "Pilih kategori"}
+              </option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </FormSection>
+
+          {/* ── Authors ── */}
+          <FormSection
+            label="Penulis"
+            error={errors.additionalAuthorIds}
+            hint="Kamu otomatis menjadi penulis. Tambahkan penulis lain jika diperlukan."
+          >
+            <UserMultiSelect
+              users={users}
+              selectedIds={authorIds}
+              onChange={setAuthorIds}
+              lockedIds={session?.user?.id ? [session.user.id] : []}
+              placeholder={
+                loadingData ? "Memuat pengguna..." : "Tambah penulis lain..."
+              }
+            />
+          </FormSection>
+
+          {/* ── Full Content ── */}
+          <FormSection
+            label="Isi Konten"
+            htmlFor="fullContent"
+            error={errors.fullContent}
+          >
+            <textarea
+              id="fullContent"
+              value={fullContent}
+              onChange={(e) => setFullContent(e.target.value)}
+              placeholder="Tulis konten berita di sini..."
+              rows={18}
+              className={cn(
+                "border-input bg-background w-full rounded-md border px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow]",
+                "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                "resize-y placeholder:text-muted-foreground",
+                errors.fullContent && "border-destructive",
+              )}
+            />
+            <p className="text-right text-xs text-muted-foreground">
+              {fullContent.length} karakter
+            </p>
+          </FormSection>
+
+          {/* ── Summary ── */}
+          <FormSection
+            label="Ringkasan"
+            htmlFor="summary"
+            error={errors.summary}
+          >
+            <textarea
+              id="summary"
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="Tulis ringkasan singkat berita (tampil di kartu berita)..."
+              rows={4}
+              className={cn(
+                "border-input bg-background w-full rounded-md border px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow]",
+                "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                "resize-none placeholder:text-muted-foreground",
+                errors.summary && "border-destructive",
+              )}
+            />
+            <p className="text-right text-xs text-muted-foreground">
+              {summary.length} karakter
+            </p>
+          </FormSection>
+        </form>
+      </main>
+    </div>
+  );
+}
