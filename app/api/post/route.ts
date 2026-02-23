@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
         fullContent: true,
         image: true,
         published: true,
+        isHighlight: true,
         categoryId: true,
         category: { select: { id: true, name: true, color: true } },
         authors: { select: { id: true, name: true, email: true, image: true } },
@@ -97,6 +98,7 @@ export async function PUT(req: NextRequest) {
       fullContent,
       summary,
       published,
+      isHighlight,
       imageUrl,
     } = parsed.data;
 
@@ -141,6 +143,7 @@ export async function PUT(req: NextRequest) {
         image: imageUrl !== undefined ? imageUrl || null : undefined,
         categoryId,
         published,
+        isHighlight,
         authors: {
           set: allAuthorIds.map((aid) => ({ id: aid })),
         },
@@ -194,6 +197,7 @@ export async function POST(req: NextRequest) {
       fullContent,
       summary,
       published,
+      isHighlight,
       imageUrl,
     } = parsed.data;
 
@@ -224,6 +228,7 @@ export async function POST(req: NextRequest) {
         image: imageUrl || null,
         categoryId,
         published,
+        isHighlight,
         authors: {
           connect: authorIds.map((id) => ({ id })),
         },
@@ -238,6 +243,57 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Gagal membuat postingan" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      return NextResponse.json(
+        { error: "Tidak terautentikasi" },
+        { status: 401 },
+      );
+    }
+    const userRole = (session.user as SessionUser).role ?? "";
+    if (!["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json(
+        { error: "Parameter id diperlukan" },
+        { status: 400 },
+      );
+    }
+
+    const body = await req.json();
+    const parsed = z.object({ isHighlight: z.boolean() }).safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Validasi gagal",
+          details: z.flattenError(parsed.error).fieldErrors,
+        },
+        { status: 422 },
+      );
+    }
+
+    const post = await prisma.post.update({
+      where: { id },
+      data: { isHighlight: parsed.data.isHighlight },
+      select: { id: true, isHighlight: true },
+    });
+
+    return NextResponse.json(post);
+  } catch {
+    return NextResponse.json(
+      { error: "Gagal memperbarui postingan" },
       { status: 500 },
     );
   }

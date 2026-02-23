@@ -7,6 +7,7 @@ export const createPostSchema = z.object({
   fullContent: z.string().min(10, "Konten wajib diisi"),
   summary: z.string().min(10, "Ringkasan wajib diisi"),
   published: z.boolean().optional().default(false),
+  isHighlight: z.boolean().optional().default(false),
   imageUrl: z
     .string()
     .url("URL gambar tidak valid")
@@ -26,6 +27,7 @@ export const updatePostSchema = z.object({
   fullContent: z.string().min(10, "Konten wajib diisi"),
   summary: z.string().min(10, "Ringkasan wajib diisi"),
   published: z.boolean().optional().default(false),
+  isHighlight: z.boolean().optional().default(false),
   imageUrl: z
     .string()
     .url("URL gambar tidak valid")

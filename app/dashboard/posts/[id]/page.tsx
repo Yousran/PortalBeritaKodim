@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Toggle } from "@/components/ui/toggle";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { updatePostSchema, UpdatePostFormErrors } from "@/lib/schemas/post";
@@ -94,6 +95,7 @@ export default function EditPostPage() {
   const [fullContent, setFullContent] = useState("");
   const [summary, setSummary] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [isHighlight, setIsHighlight] = useState(false);
 
   const [errors, setErrors] = useState<UpdatePostFormErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -122,6 +124,7 @@ export default function EditPostPage() {
             fullContent: string;
             summary: string;
             image: string | null;
+            isHighlight: boolean;
             authors: Array<{ id: string }>;
           };
           setTitle(post.title);
@@ -129,6 +132,7 @@ export default function EditPostPage() {
           setFullContent(post.fullContent);
           setSummary(post.summary);
           setImageUrl(post.image ?? "");
+          setIsHighlight(post.isHighlight);
           setAuthorIds(post.authors.map((a) => a.id));
         }
 
@@ -160,7 +164,8 @@ export default function EditPostPage() {
       fullContent,
       summary,
       published: publishIntent.current,
-      imageUrl: imageUrl || undefined,
+      isHighlight,
+      imageUrl: imageUrl || "",
     });
 
     if (!parsed.success) {
@@ -324,33 +329,50 @@ export default function EditPostPage() {
                 />
               </FormSection>
 
-              {/* ── Category ── */}
+              {/* ── Category + Highlight ── */}
               <FormSection
                 label="Kategori"
                 htmlFor="categoryId"
                 error={errors.categoryId}
               >
-                <Select
-                  value={categoryId || "NONE"}
-                  onValueChange={(val) =>
-                    setCategoryId(val === "NONE" ? "" : val)
-                  }
-                >
-                  <SelectTrigger
-                    id="categoryId"
-                    className={cn(errors.categoryId && "border-destructive")}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <Select
+                      value={categoryId || "NONE"}
+                      onValueChange={(val) =>
+                        setCategoryId(val === "NONE" ? "" : val)
+                      }
+                    >
+                      <SelectTrigger
+                        id="categoryId"
+                        className={cn(
+                          "w-full",
+                          errors.categoryId && "border-destructive",
+                        )}
+                      >
+                        <SelectValue placeholder="Pilih kategori" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NONE">Pilih kategori</SelectItem>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Toggle
+                    pressed={isHighlight}
+                    onPressedChange={setIsHighlight}
+                    variant="outline"
+                    aria-label="Tandai sebagai highlight"
+                    className="shrink-0"
                   >
-                    <SelectValue placeholder="Pilih kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NONE">Pilih kategori</SelectItem>
-                    {categories.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    Highlight
+                  </Toggle>
+                </div>
               </FormSection>
 
               {/* ── Authors ── */}

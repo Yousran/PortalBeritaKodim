@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
           summary: true,
           image: true,
           published: true,
+          isHighlight: true,
           views: true,
           createdAt: true,
           category: { select: { id: true, name: true, color: true } },

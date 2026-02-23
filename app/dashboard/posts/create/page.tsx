@@ -133,7 +133,8 @@ export default function CreatePostPage() {
       fullContent,
       summary,
       published: publishIntent.current,
-      imageUrl: imageUrl || undefined,
+      isHighlight: publishIntent.current,
+      imageUrl: imageUrl || "",
     });
 
     if (!parsed.success) {

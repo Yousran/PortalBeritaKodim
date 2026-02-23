@@ -12,6 +12,7 @@ import {
   Loader2,
   Pencil,
   Eye,
+  Sparkles,
 } from "lucide-react";
 import Navbar from "@/components/custom/navbar";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ interface Post {
   title: string;
   slug: string;
   published: boolean;
+  isHighlight: boolean;
   views: number;
   createdAt: string;
   category: { id: string; name: string; color: string | null };
@@ -107,9 +109,10 @@ function RowSkeleton() {
       </div>
       <Skeleton className="h-5 w-16 rounded-full" />
       <Skeleton className="h-5 w-12 rounded-full" />
+      <Skeleton className="h-5 w-8 rounded-full" />
+      <Skeleton className="h-3 w-8" />
       <Skeleton className="h-3 w-20" />
-      <Skeleton className="h-8 w-8 rounded-md" />
-      <Skeleton className="h-8 w-8 rounded-md" />
+      <Skeleton className="h-8 w-16 rounded-md" />
     </div>
   );
 }
@@ -126,6 +129,9 @@ export default function PostsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmPost, setConfirmPost] = useState<Post | null>(null);
+  const [togglingHighlightId, setTogglingHighlightId] = useState<string | null>(
+    null,
+  );
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search
@@ -188,6 +194,33 @@ export default function PostsPage() {
       }
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleToggleHighlight(post: Post) {
+    setTogglingHighlightId(post.id);
+    try {
+      const res = await fetch(`/api/post?id=${post.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isHighlight: !post.isHighlight }),
+      });
+      if (res.ok) {
+        setData((prev) =>
+          prev
+            ? {
+                ...prev,
+                data: prev.data.map((p) =>
+                  p.id === post.id
+                    ? { ...p, isHighlight: !post.isHighlight }
+                    : p,
+                ),
+              }
+            : prev,
+        );
+      }
+    } finally {
+      setTogglingHighlightId(null);
     }
   }
 
@@ -310,10 +343,13 @@ export default function PostsPage() {
         {/* Table card */}
         <Card className="overflow-hidden gap-0 py-0">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] items-center gap-3 bg-zinc-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground dark:bg-zinc-800/60">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] items-center gap-3 bg-zinc-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground dark:bg-zinc-800/60">
             <span>Judul</span>
             <span className="w-24">Kategori</span>
             <span className="w-16 text-center">Status</span>
+            <span className="w-8 text-center">
+              <Sparkles className="size-3.5 mx-auto" />
+            </span>
             <span className="w-8 text-center">
               <Eye className="size-3.5 mx-auto" />
             </span>
@@ -353,7 +389,7 @@ export default function PostsPage() {
           ) : (
             posts.map((post, i) => (
               <div key={post.id}>
-                <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] items-center gap-3 px-4 py-3">
+                <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] items-center gap-3 px-4 py-3">
                   {/* Title + authors */}
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -375,6 +411,36 @@ export default function PostsPage() {
                   {/* Status */}
                   <div className="w-16 flex justify-center">
                     <StatusBadge published={post.published} />
+                  </div>
+
+                  {/* Highlight */}
+                  <div className="w-8 flex justify-center">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className={cn(
+                        "size-7",
+                        post.isHighlight
+                          ? "text-amber-400 hover:text-amber-500"
+                          : "text-muted-foreground hover:text-amber-400",
+                      )}
+                      disabled={togglingHighlightId === post.id}
+                      onClick={() => handleToggleHighlight(post)}
+                      aria-label={
+                        post.isHighlight
+                          ? "Hapus highlight"
+                          : "Jadikan highlight"
+                      }
+                    >
+                      {togglingHighlightId === post.id ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles
+                          className="size-3.5"
+                          fill={post.isHighlight ? "currentColor" : "none"}
+                        />
+                      )}
+                    </Button>
                   </div>
 
                   {/* Views */}

@@ -1,3 +1,12 @@
+// TODO: change theme color
+// TODO: tiptap editor for news content
+// TODO: api security
+// TODO: fe security
+// TODO: refactor code for uniformity and readability
+// TODO: shadcn sonner for alert and notification
+// TODO: dashboard with simple stats
+// TODO: google login
+// TODO: multiple category for posts
 "use client";
 
 import { useState, useEffect } from "react";
