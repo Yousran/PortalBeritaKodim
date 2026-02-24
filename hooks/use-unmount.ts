@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect } from "react"
+import { useRef, useEffect, useLayoutEffect } from "react";
 
 /**
  * Hook that executes a callback when the component unmounts.
@@ -7,17 +7,17 @@ import { useRef, useEffect, useLayoutEffect } from "react"
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useUnmount = (callback: (...args: Array<any>) => any) => {
-  const ref = useRef(callback)
+  const ref = useRef(callback);
   useLayoutEffect(() => {
-    ref.current = callback
-  })
+    ref.current = callback;
+  });
 
   useEffect(
     () => () => {
-      ref.current()
+      ref.current();
     },
-    []
-  )
-}
+    [],
+  );
+};
 
-export default useUnmount
+export default useUnmount;
