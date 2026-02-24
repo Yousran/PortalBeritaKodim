@@ -1,4 +1,3 @@
-// TODO: tampilkan berita lainnya tidak akan kembali ke atas
 // TODO: search bar on landing page
 // TODO: scroll to top FOAB for landing page and news page
 // TODO: viewer increment on news detail page
@@ -24,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { CategoryBadge } from "@/components/custom/category-badge";
 import { BreakingNews } from "@/components/custom/breaking-news";
-import { PostsGrid } from "@/components/custom/posts-grid";
+import { PostsGrid, PostsSkeleton } from "@/components/custom/posts-grid";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type NewsCardPost } from "@/components/custom/news-card";
 
@@ -79,6 +78,9 @@ export default function BerandaPage() {
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
+  const [categoryPosts, setCategoryPosts] = useState<NewsCardPost[]>([]);
+  const [categoryTotalPages, setCategoryTotalPages] = useState(1);
 
   useEffect(() => {
     async function load() {
@@ -107,8 +109,21 @@ export default function BerandaPage() {
     load();
   }, []);
 
-  function handleCategoryToggle(id: string) {
-    setSelectedCategoryId((prev) => (prev === id ? null : id));
+  async function handleCategoryToggle(id: string) {
+    const newId = selectedCategoryId === id ? null : id;
+    setSelectedCategoryId(newId);
+    if (!newId) return;
+    setIsCategoryLoading(true);
+    const res = await fetch(
+      `/api/posts?status=published&limit=5&categoryId=${newId}`,
+      { cache: "no-store" },
+    );
+    if (res.ok) {
+      const j = await res.json();
+      setCategoryPosts((j.data as ApiPost[]).map(mapPost));
+      setCategoryTotalPages(j.totalPages ?? 1);
+    }
+    setIsCategoryLoading(false);
   }
 
   return (
@@ -122,25 +137,16 @@ export default function BerandaPage() {
           <div className="flex min-w-0 flex-1 flex-col gap-6">
             <div className="grid gap-5">
               <BreakingNews />
-              {isLoading ? (
-                <div className="flex flex-col gap-5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="flex gap-4 rounded-xl bg-card p-4">
-                      <Skeleton className="h-28 w-40 shrink-0 rounded-lg bg-foreground/50" />
-                      <div className="flex flex-1 flex-col gap-3 py-1">
-                        <Skeleton className="h-3 w-20 rounded bg-foreground/50" />
-                        <Skeleton className="h-4 w-full rounded bg-foreground/50" />
-                        <Skeleton className="h-4 w-3/4 rounded bg-foreground/50" />
-                        <Skeleton className="mt-auto h-3 w-24 rounded bg-foreground/50" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {isLoading || isCategoryLoading ? (
+                <PostsSkeleton />
               ) : (
                 <PostsGrid
-                  initialPosts={allPosts}
+                  key={selectedCategoryId ?? "all"}
+                  initialPosts={selectedCategoryId ? categoryPosts : allPosts}
                   initialPage={1}
-                  totalPages={totalPages}
+                  totalPages={
+                    selectedCategoryId ? categoryTotalPages : totalPages
+                  }
                   categoryId={selectedCategoryId}
                 />
               )}
