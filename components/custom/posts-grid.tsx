@@ -11,6 +11,8 @@ interface PostsGridProps {
   totalPages: number;
   categoryId?: string | null;
   searchQuery?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 type ApiPost = {
@@ -75,6 +77,8 @@ export function PostsGrid({
   totalPages,
   categoryId = null,
   searchQuery = "",
+  dateFrom = "",
+  dateTo = "",
 }: PostsGridProps) {
   const [posts, setPosts] = useState<NewsCardPost[]>(initialPosts);
   const [page, setPage] = useState(initialPage);
@@ -91,6 +95,8 @@ export function PostsGrid({
     });
     if (catId) params.set("categoryId", catId);
     if (searchQuery) params.set("q", searchQuery);
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
     const res = await fetch(`/api/posts?${params}`, { cache: "no-store" });
     if (!res.ok) return;
     const json = await res.json();

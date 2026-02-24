@@ -1,4 +1,3 @@
-// TODO: filter by date range
 // TODO: api security
 // TODO: fe security
 // TODO: refactor code for uniformity and readability
@@ -11,11 +10,14 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/custom/navbar";
 import Footer from "@/components/custom/footer";
+import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { CategoryBadge } from "@/components/custom/category-badge";
 import { BreakingNews } from "@/components/custom/breaking-news";
+import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { PostsGrid, PostsSkeleton } from "@/components/custom/posts-grid";
 import { ScrollToTopButton } from "@/components/custom/scroll-to-top";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -78,14 +80,23 @@ function BerandaContent() {
   const [isCategoryLoading, setIsCategoryLoading] = useState(false);
   const [categoryPosts, setCategoryPosts] = useState<NewsCardPost[]>([]);
   const [categoryTotalPages, setCategoryTotalPages] = useState(1);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  const dateFrom = dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : "";
+  const dateTo = dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : "";
 
   useEffect(() => {
     async function load() {
       setIsLoading(true);
       setSelectedCategoryId(null);
-      const postsUrl = searchQuery
-        ? `/api/posts?status=published&limit=20&q=${encodeURIComponent(searchQuery)}`
-        : "/api/posts?status=published&limit=20";
+      const postsParams = new URLSearchParams({
+        status: "published",
+        limit: "20",
+      });
+      if (searchQuery) postsParams.set("q", searchQuery);
+      if (dateFrom) postsParams.set("dateFrom", dateFrom);
+      if (dateTo) postsParams.set("dateTo", dateTo);
+      const postsUrl = `/api/posts?${postsParams}`;
       const [postsRes, kategorisRes, highlightRes] = await Promise.all([
         fetch(postsUrl, { cache: "no-store" }),
         fetch("/api/categories?limit=100", { cache: "no-store" }),
@@ -109,17 +120,21 @@ function BerandaContent() {
       setIsLoading(false);
     }
     load();
-  }, [searchQuery]);
+  }, [searchQuery, dateRange, dateFrom, dateTo]);
 
   async function handleCategoryToggle(id: string) {
     const newId = selectedCategoryId === id ? null : id;
     setSelectedCategoryId(newId);
     if (!newId) return;
     setIsCategoryLoading(true);
-    const res = await fetch(
-      `/api/posts?status=published&limit=5&categoryId=${newId}`,
-      { cache: "no-store" },
-    );
+    const catParams = new URLSearchParams({
+      status: "published",
+      limit: "5",
+      categoryId: newId,
+    });
+    if (dateFrom) catParams.set("dateFrom", dateFrom);
+    if (dateTo) catParams.set("dateTo", dateTo);
+    const res = await fetch(`/api/posts?${catParams}`, { cache: "no-store" });
     if (res.ok) {
       const j = await res.json();
       setCategoryPosts((j.data as ApiPost[]).map(mapPost));
@@ -186,6 +201,22 @@ function BerandaContent() {
                     </div>
                   )
                 )}
+
+                {/* Mobile Date Filter */}
+                <div>
+                  <h3 className="mb-2 text-sm font-bold text-foreground">
+                    Filter Tanggal
+                  </h3>
+                  <DateRangePicker value={dateRange} onChange={setDateRange} />
+                  {dateRange && (
+                    <button
+                      onClick={() => setDateRange(undefined)}
+                      className="mt-1.5 text-xs text-foreground/60 hover:text-primary"
+                    >
+                      Reset Filter
+                    </button>
+                  )}
+                </div>
               </div>
 
               {isLoading || isCategoryLoading ? (
@@ -200,6 +231,8 @@ function BerandaContent() {
                   }
                   categoryId={selectedCategoryId}
                   searchQuery={searchQuery}
+                  dateFrom={dateFrom}
+                  dateTo={dateTo}
                 />
               )}
             </div>
@@ -307,6 +340,27 @@ function BerandaContent() {
                 </Card>
               )
             )}
+
+            {/* Desktop Date Filter */}
+            <Card className="border-foreground/10 bg-card py-4">
+              <CardContent className="px-4">
+                <h3 className="mb-4 text-base font-bold text-foreground">
+                  Filter Tanggal
+                </h3>
+                <Separator className="mb-4 border-foreground/10" />
+                <div className="flex flex-col gap-3">
+                  <DateRangePicker value={dateRange} onChange={setDateRange} />
+                  {dateRange && (
+                    <button
+                      onClick={() => setDateRange(undefined)}
+                      className="text-xs text-foreground/60 hover:text-primary"
+                    >
+                      Reset Filter
+                    </button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </aside>
         </div>
       </main>
