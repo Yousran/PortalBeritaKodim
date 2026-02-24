@@ -1,4 +1,3 @@
-// TODO: shadcn sonner for alert and notification
 // TODO: dashboard with simple stats
 // TODO: peta lokasi
 // TODO: filter by date range

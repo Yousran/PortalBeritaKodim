@@ -16,6 +16,7 @@ import {
   ChevronsUpDown,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import Navbar from "@/components/custom/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -293,7 +294,6 @@ export default function BreakingNewsPage() {
   const [editingItem, setEditingItem] = useState<BreakingNewsItem | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
-  const [serverError, setServerError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // Delete dialog
@@ -342,7 +342,6 @@ export default function BreakingNewsPage() {
       mode: item.postId ? "post" : "manual",
     });
     setFormErrors({});
-    setServerError("");
     setDialogOpen(true);
   }
 
@@ -363,7 +362,6 @@ export default function BreakingNewsPage() {
       return;
     }
     setFormErrors({});
-    setServerError("");
     setSubmitting(true);
 
     const payload = {
@@ -391,7 +389,7 @@ export default function BreakingNewsPage() {
         if (json.details) {
           setFormErrors(json.details);
         } else {
-          setServerError(json.error ?? "Terjadi kesalahan, coba lagi.");
+          toast.error(json.error ?? "Terjadi kesalahan, coba lagi.");
         }
         return;
       }
@@ -399,7 +397,7 @@ export default function BreakingNewsPage() {
       setDialogOpen(false);
       await fetchItems();
     } catch {
-      setServerError("Tidak dapat menghubungi server.");
+      toast.error("Tidak dapat menghubungi server.");
     } finally {
       setSubmitting(false);
     }
@@ -611,10 +609,6 @@ export default function BreakingNewsPage() {
                 {form.isActive ? "Aktif" : "Nonaktif"}
               </Button>
             </div>
-
-            {serverError && (
-              <p className="text-sm text-destructive">{serverError}</p>
-            )}
 
             <DialogFooter className="gap-2">
               <Button

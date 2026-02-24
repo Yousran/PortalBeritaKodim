@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import Navbar from "@/components/custom/navbar";
 import Footer from "@/components/custom/footer";
 import Image from "next/image";
@@ -21,14 +22,10 @@ export default function KontakPage() {
     content: "",
   });
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
-    setError(null);
-    setSuccess(false);
     try {
       const res = await fetch("/api/messages", {
         method: "POST",
@@ -41,14 +38,16 @@ export default function KontakPage() {
         }),
       });
       if (res.ok) {
-        setSuccess(true);
+        toast.success(
+          "Pesan berhasil dikirim! Kami akan segera menghubungi Anda.",
+        );
         setForm({ fullName: "", email: "", phoneNumber: "", content: "" });
       } else {
         const json = await res.json();
-        setError((json.error as string) ?? "Gagal mengirim pesan.");
+        toast.error((json.error as string) ?? "Gagal mengirim pesan.");
       }
     } catch {
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
     }
@@ -234,16 +233,6 @@ export default function KontakPage() {
                     className="w-full resize-none rounded-lg border border-foreground/20 bg-background px-4 py-3 text-foreground outline-none transition-all placeholder:text-foreground/40 focus:border-transparent focus:ring-2 focus:ring-primary"
                   />
                 </div>
-                {error && (
-                  <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-900/20 dark:text-red-400">
-                    {error}
-                  </p>
-                )}
-                {success && (
-                  <p className="rounded-lg bg-primary/10 px-4 py-3 text-sm font-medium text-primary">
-                    Pesan berhasil dikirim! Kami akan segera menghubungi Anda.
-                  </p>
-                )}
                 <button
                   type="submit"
                   disabled={submitting}
