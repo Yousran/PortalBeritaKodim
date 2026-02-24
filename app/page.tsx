@@ -139,6 +139,55 @@ function BerandaContent() {
           <div className="flex min-w-0 flex-1 flex-col gap-6">
             <div className="grid gap-5">
               <BreakingNews />
+
+              {/* Mobile Highlight & Category — hidden on xl (shown in sidebar) */}
+              <div className="flex flex-col gap-4 overflow-hidden xl:hidden">
+                {/* Mobile Category */}
+                {isLoading ? (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton
+                        key={i}
+                        className="h-8 w-24 shrink-0 rounded-lg bg-foreground/50"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  categories.length > 0 && (
+                    <div>
+                      <h3 className="mb-2 text-sm font-bold text-foreground">
+                        Kategori
+                      </h3>
+                      <div className="flex w-full gap-2 overflow-x-auto pb-1">
+                        <Toggle
+                          pressed={selectedCategoryId === null}
+                          onPressedChange={() => setSelectedCategoryId(null)}
+                          className="shrink-0 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-semibold text-foreground/60 hover:border-primary hover:bg-primary/10 data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary"
+                        >
+                          Semua
+                        </Toggle>
+                        {categories.map((cat) => (
+                          <Toggle
+                            key={cat.id}
+                            pressed={selectedCategoryId === cat.id}
+                            onPressedChange={() => handleCategoryToggle(cat.id)}
+                            className="shrink-0 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-semibold text-foreground/60 hover:border-primary hover:bg-primary/10 data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary"
+                          >
+                            <span
+                              className="mr-1.5 inline-block h-2 w-2 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor: cat.color ?? "#6b7280",
+                              }}
+                            />
+                            {cat.name}
+                          </Toggle>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+
               {isLoading || isCategoryLoading ? (
                 <PostsSkeleton />
               ) : (
