@@ -1,5 +1,3 @@
-// TODO: search bar on landing page
-// TODO: scroll to top FOAB for landing page and news page
 // TODO: api security
 // TODO: fe security
 // TODO: refactor code for uniformity and readability
@@ -12,9 +10,10 @@
 // TODO: multiple category for posts
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/custom/navbar";
 import Footer from "@/components/custom/footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +22,8 @@ import { Toggle } from "@/components/ui/toggle";
 import { CategoryBadge } from "@/components/custom/category-badge";
 import { BreakingNews } from "@/components/custom/breaking-news";
 import { PostsGrid, PostsSkeleton } from "@/components/custom/posts-grid";
+import { PostsGrid } from "@/components/custom/posts-grid";
+import { ScrollToTopButton } from "@/components/custom/scroll-to-top";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type NewsCardPost } from "@/components/custom/news-card";
 
@@ -68,7 +69,10 @@ function mapPost(post: ApiPost): NewsCardPost {
   };
 }
 
-export default function BerandaPage() {
+function BerandaContent() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") ?? "";
+
   const [allPosts, setAllPosts] = useState<NewsCardPost[]>([]);
   const [highlightPosts, setHighlightPosts] = useState<NewsCardPost[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
@@ -147,6 +151,7 @@ export default function BerandaPage() {
                     selectedCategoryId ? categoryTotalPages : totalPages
                   }
                   categoryId={selectedCategoryId}
+                  searchQuery={searchQuery}
                 />
               )}
             </div>
@@ -259,6 +264,15 @@ export default function BerandaPage() {
       </main>
 
       <Footer />
+      <ScrollToTopButton />
     </div>
+  );
+}
+
+export default function BerandaPage() {
+  return (
+    <Suspense>
+      <BerandaContent />
+    </Suspense>
   );
 }

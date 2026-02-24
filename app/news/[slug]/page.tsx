@@ -9,6 +9,7 @@ import Navbar from "@/components/custom/navbar";
 import Footer from "@/components/custom/footer";
 import { CategoryBadge } from "@/components/custom/category-badge";
 import { NewsCard, type NewsCardPost } from "@/components/custom/news-card";
+import { ScrollToTopButton } from "@/components/custom/scroll-to-top";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
@@ -287,6 +288,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
       </main>
 
       <Footer />
+      <ScrollToTopButton />
     </div>
   );
 }

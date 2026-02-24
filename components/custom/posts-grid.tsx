@@ -10,6 +10,7 @@ interface PostsGridProps {
   initialPage: number;
   totalPages: number;
   categoryId?: string | null;
+  searchQuery?: string;
 }
 
 type ApiPost = {
@@ -73,6 +74,7 @@ export function PostsGrid({
   initialPage,
   totalPages,
   categoryId = null,
+  searchQuery = "",
 }: PostsGridProps) {
   const [posts, setPosts] = useState<NewsCardPost[]>(initialPosts);
   const [page, setPage] = useState(initialPage);
@@ -118,7 +120,7 @@ export function PostsGrid({
         </>
       )}
 
-      {hasMore && (
+      {hasMore && !isLoadingMore && (
         <div className="flex justify-center pt-2">
           <Button
             onClick={loadMore}
