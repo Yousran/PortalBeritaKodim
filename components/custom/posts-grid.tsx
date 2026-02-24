@@ -74,6 +74,7 @@ export function PostsGrid({
   initialPage,
   totalPages,
   categoryId = null,
+  searchQuery = "",
 }: PostsGridProps) {
   const [posts, setPosts] = useState<NewsCardPost[]>(initialPosts);
   const [page, setPage] = useState(initialPage);
@@ -89,6 +90,7 @@ export function PostsGrid({
       page: String(pageNum),
     });
     if (catId) params.set("categoryId", catId);
+    if (searchQuery) params.set("q", searchQuery);
     const res = await fetch(`/api/posts?${params}`, { cache: "no-store" });
     if (!res.ok) return;
     const json = await res.json();

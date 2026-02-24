@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
 import {
@@ -110,7 +111,10 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-foreground/10 bg-card/70 backdrop-blur-md" data-search-open={searchOpen}>
+    <header
+      className="fixed top-0 left-0 right-0 z-50 border-b border-foreground/10 bg-card/70 backdrop-blur-md"
+      data-search-open={searchOpen}
+    >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:px-8">
         {/* ── Logo & Title ── */}
         <Link href="/" className="flex shrink-0 items-center gap-3">
@@ -161,12 +165,12 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
 
         {/* ── Right Side: Theme + Avatar ── */}
         <div className="flex shrink-0 items-center gap-1">
-          {variant === "public" && (
+          {pathname === "/" && (
             <Button
               variant="ghost"
               size="icon"
               className={cn(
-                "size-9 rounded-full transition-colors",
+                "size-9 transition-colors",
                 searchOpen && "bg-primary/10 text-primary",
               )}
               onClick={() => setSearchOpen((o) => !o)}
@@ -269,42 +273,44 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
       </nav>
 
       {/* ── Search Dropdown ── */}
-      <div
-        className={cn(
-          "overflow-hidden border-foreground/10 bg-card/90 backdrop-blur-md transition-all duration-300 ease-in-out",
-          searchOpen ? "max-h-20 border-t py-3" : "max-h-0 border-t-0 py-0",
-        )}
-      >
-        <form
-          onSubmit={handleSearchSubmit}
-          className="mx-auto flex max-w-7xl items-center gap-3 px-4 md:px-8"
+      {pathname === "/" && (
+        <div
+          className={cn(
+            "overflow-hidden border-foreground/10 bg-card/90 backdrop-blur-md transition-all duration-300 ease-in-out",
+            searchOpen ? "max-h-20 border-t py-3" : "max-h-0 border-t-0 py-0",
+          )}
         >
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-foreground/40" />
-            <input
-              ref={searchInputRef}
-              type="search"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
-              placeholder="Cari berita..."
-              className="h-9 w-full rounded-lg border border-foreground/20 bg-background pl-9 pr-4 text-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <Button type="submit" size="sm" className="shrink-0">
-            Cari
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="shrink-0"
-            onClick={() => setSearchOpen(false)}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="mx-auto flex max-w-7xl items-center gap-3 px-4 md:px-8"
           >
-            Batal
-          </Button>
-        </form>
-      </div>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-foreground/40" />
+              <Input
+                ref={searchInputRef}
+                type="search"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
+                placeholder="Cari berita..."
+                className="pl-9"
+              />
+            </div>
+            <Button type="submit" size="sm" className="shrink-0">
+              Cari
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="shrink-0"
+              onClick={() => setSearchOpen(false)}
+            >
+              Batal
+            </Button>
+          </form>
+        </div>
+      )}
 
       {/* ── Mobile Menu ── */}
       {mobileOpen && (

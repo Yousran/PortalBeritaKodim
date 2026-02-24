@@ -85,8 +85,13 @@ function BerandaContent() {
 
   useEffect(() => {
     async function load() {
+      setIsLoading(true);
+      setSelectedCategoryId(null);
+      const postsUrl = searchQuery
+        ? `/api/posts?status=published&limit=20&q=${encodeURIComponent(searchQuery)}`
+        : "/api/posts?status=published&limit=20";
       const [postsRes, kategorisRes, highlightRes] = await Promise.all([
-        fetch("/api/posts?status=published&limit=20", { cache: "no-store" }),
+        fetch(postsUrl, { cache: "no-store" }),
         fetch("/api/categories?limit=100", { cache: "no-store" }),
         fetch("/api/posts?status=published&isHighlight=true&limit=5", {
           cache: "no-store",
@@ -108,7 +113,7 @@ function BerandaContent() {
       setIsLoading(false);
     }
     load();
-  }, []);
+  }, [searchQuery]);
 
   async function handleCategoryToggle(id: string) {
     const newId = selectedCategoryId === id ? null : id;
@@ -142,7 +147,7 @@ function BerandaContent() {
                 <PostsSkeleton />
               ) : (
                 <PostsGrid
-                  key={selectedCategoryId ?? "all"}
+                  key={`${selectedCategoryId ?? "all"}-${searchQuery}`}
                   initialPosts={selectedCategoryId ? categoryPosts : allPosts}
                   initialPage={1}
                   totalPages={
