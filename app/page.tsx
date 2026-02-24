@@ -1,4 +1,3 @@
-// TODO: dashboard with simple stats
 // TODO: peta lokasi
 // TODO: filter by date range
 // TODO: profile edit

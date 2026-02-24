@@ -50,6 +50,7 @@ const publicLinks: NavLink[] = [
 ];
 
 const dashboardLinks: NavLink[] = [
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Postingan", href: "/dashboard/posts" },
   { label: "Breaking News", href: "/dashboard/breaking-news" },
   { label: "Pengguna", href: "/dashboard/users" },
@@ -58,6 +59,7 @@ const dashboardLinks: NavLink[] = [
 ];
 
 const dashboardIcons: Record<string, React.ElementType> = {
+  "/dashboard": LayoutDashboard,
   "/dashboard/posts": FileText,
   "/dashboard/breaking-news": Bell,
   "/dashboard/users": Users,
@@ -141,8 +143,8 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
           {links.map((link) => {
             const Icon = dashboardIcons[link.href];
             const active =
-              link.href === "/"
-                ? pathname === "/"
+              link.href === "/" || link.href === "/dashboard"
+                ? pathname === link.href
                 : pathname.startsWith(link.href);
             return (
               <li key={link.href}>
@@ -319,8 +321,8 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
             {links.map((link) => {
               const Icon = dashboardIcons[link.href];
               const active =
-                link.href === "/"
-                  ? pathname === "/"
+                link.href === "/" || link.href === "/dashboard"
+                  ? pathname === link.href
                   : pathname.startsWith(link.href);
               return (
                 <li key={link.href}>
