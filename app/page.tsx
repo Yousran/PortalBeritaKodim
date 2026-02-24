@@ -1,6 +1,5 @@
 // TODO: search bar on landing page
 // TODO: scroll to top FOAB for landing page and news page
-// TODO: viewer increment on news detail page
 // TODO: api security
 // TODO: fe security
 // TODO: refactor code for uniformity and readability
