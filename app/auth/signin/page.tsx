@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,13 +20,11 @@ export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
     try {
       const { error } = await authClient.signIn.email({
@@ -33,12 +32,12 @@ export default function SignInPage() {
         password,
       });
       if (error) {
-        setError(error.message ?? "Email atau kata sandi salah.");
+        toast.error(error.message ?? "Email atau kata sandi salah.");
       } else {
         router.push("/dashboard");
       }
     } catch {
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -90,8 +89,6 @@ export default function SignInPage() {
                 autoComplete="current-password"
               />
             </div>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button
               type="submit"

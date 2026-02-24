@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
     const categoryId = searchParams.get("categoryId")?.trim() ?? "";
     const status = searchParams.get("status") ?? "all"; // "all" | "published" | "draft"
     const isHighlight = searchParams.get("isHighlight");
+    const dateFrom = searchParams.get("dateFrom")?.trim() ?? "";
+    const dateTo = searchParams.get("dateTo")?.trim() ?? "";
 
     const where = {
       ...(search
@@ -30,6 +32,14 @@ export async function GET(req: NextRequest) {
         : isHighlight === "false"
           ? { isHighlight: false }
           : {}),
+      ...(dateFrom || dateTo
+        ? {
+            createdAt: {
+              ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+              ...(dateTo ? { lte: new Date(dateTo + "T23:59:59.999Z") } : {}),
+            },
+          }
+        : {}),
     };
 
     const [posts, total] = await Promise.all([
