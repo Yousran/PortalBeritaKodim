@@ -201,13 +201,13 @@ export default function MessagesPage() {
   async function handleView(id: string) {
     setViewLoading(true);
     try {
-      const res = await fetch(`/api/message?id=${id}`);
+      const res = await fetch(`/api/messages/${id}`);
       if (res.ok) {
         const msg: Message = await res.json();
         setViewMessage(msg);
         // If unread → mark as read
         if (!msg.isRead) {
-          await fetch(`/api/message?id=${id}`, {
+          await fetch(`/api/messages/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ isRead: true }),
@@ -234,7 +234,7 @@ export default function MessagesPage() {
   async function handleToggleRead(msg: Message) {
     setTogglingId(msg.id);
     try {
-      const res = await fetch(`/api/message?id=${msg.id}`, {
+      const res = await fetch(`/api/messages/${msg.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isRead: !msg.isRead }),
@@ -258,7 +258,7 @@ export default function MessagesPage() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/message?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/messages/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmMessage(null);
         const isLastOnPage = data?.data.length === 1 && page > 1;

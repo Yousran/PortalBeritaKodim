@@ -206,7 +206,7 @@ export default function PostsPage() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/post?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmPost(null);
         const isLastOnPage = data?.data.length === 1 && page > 1;
@@ -221,7 +221,7 @@ export default function PostsPage() {
   async function handleToggleHighlight(post: Post) {
     setTogglingHighlightId(post.id);
     try {
-      const res = await fetch(`/api/post?id=${post.id}`, {
+      const res = await fetch(`/api/posts/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isHighlight: !post.isHighlight }),

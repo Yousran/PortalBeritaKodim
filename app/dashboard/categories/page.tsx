@@ -117,7 +117,7 @@ export default function CategoriesPage() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/category?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmId(null);
         // Refetch; if last item on page > 1, go back

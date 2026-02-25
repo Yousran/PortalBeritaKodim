@@ -191,10 +191,10 @@ export default function UsersPage() {
     if (user.role === newRole) return;
     setUpdatingId(user.id);
     try {
-      const res = await fetch("/api/user", {
+      const res = await fetch(`/api/users/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: user.id, role: newRole }),
+        body: JSON.stringify({ role: newRole }),
       });
       if (res.ok) {
         setData((prev) => {
@@ -215,7 +215,7 @@ export default function UsersPage() {
   async function handleDelete(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/user?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmUser(null);
         const isLastOnPage = data?.data.length === 1 && page > 1;
