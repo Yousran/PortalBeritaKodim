@@ -249,7 +249,12 @@ export default function MessagesPage() {
             data: prev.data.map((m) => (m.id === updated.id ? updated : m)),
           };
         });
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal memperbarui status pesan");
       }
+    } catch {
+      toast.error("Gagal memperbarui status pesan");
     } finally {
       setTogglingId(null);
     }

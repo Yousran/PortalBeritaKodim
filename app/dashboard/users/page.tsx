@@ -207,7 +207,13 @@ export default function UsersPage() {
             ),
           };
         });
+        toast.success(`Role ${user.name} diubah menjadi ${newRole}`);
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal mengubah role pengguna");
       }
+    } catch {
+      toast.error("Gagal mengubah role pengguna");
     } finally {
       setUpdatingId(null);
     }

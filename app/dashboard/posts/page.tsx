@@ -248,7 +248,17 @@ export default function PostsPage() {
               }
             : prev,
         );
+        toast.success(
+          post.isHighlight
+            ? "Postingan dihapus dari sorotan"
+            : "Postingan ditandai sebagai sorotan",
+        );
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal memperbarui sorotan");
       }
+    } catch {
+      toast.error("Gagal memperbarui sorotan");
     } finally {
       setTogglingHighlightId(null);
     }
