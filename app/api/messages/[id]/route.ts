@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-
-type SessionUser = typeof auth.$Infer.Session.user;
-
-async function requireAdminOrEditor() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return null;
-  const userRole = (session.user as SessionUser).role ?? "";
-  if (!["ADMIN", "EDITOR"].includes(userRole)) return null;
-  return session;
-}
+import { requireAnyRole, STAFF_ROLES } from "@/lib/dal";
 
 // GET /api/messages/[id]
 // Retrieves a single message by id. Requires ADMIN or EDITOR role.
@@ -22,13 +11,8 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const session = await requireAdminOrEditor();
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi atau tidak diizinkan" },
-        { status: 401 },
-      );
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const message = await prisma.message.findUnique({
       where: { id },
@@ -69,13 +53,8 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    const session = await requireAdminOrEditor();
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi atau tidak diizinkan" },
-        { status: 401 },
-      );
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const isRead = body.isRead as boolean;
@@ -130,13 +109,8 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await requireAdminOrEditor();
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi atau tidak diizinkan" },
-        { status: 401 },
-      );
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const existing = await prisma.message.findUnique({
       where: { id },

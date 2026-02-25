@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
+import { requireAnyRole, STAFF_ROLES } from "@/lib/dal";
 import { updateBreakingNewsSchema } from "@/lib/schemas/breaking-news";
-
-type SessionUser = typeof auth.$Infer.Session.user;
-
-function isAuthorized(role: string): boolean {
-  return ["ADMIN", "EDITOR"].includes(role);
-}
 
 // PATCH /api/breaking-news/[id]
 // Partially updates a breaking news item. Requires ADMIN or EDITOR role.
@@ -21,17 +14,8 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role ?? "";
-    if (!isAuthorized(userRole)) {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const parsed = updateBreakingNewsSchema.safeParse({ ...body, id });
@@ -119,17 +103,8 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role ?? "";
-    if (!isAuthorized(userRole)) {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     await prisma.breakingNews.delete({ where: { id } });
 

@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
+import { requireAnyRole, ADMIN_ROLES } from "@/lib/dal";
 import { updateUserRoleSchema } from "@/lib/schemas/role";
 import type { Role } from "@/lib/schemas/role";
-
-type SessionUser = typeof auth.$Infer.Session.user;
 
 // PATCH /api/users/[id]
 // Updates a user's role. Requires ADMIN role.
@@ -18,17 +15,8 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role;
-    if (userRole !== "ADMIN") {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(ADMIN_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const parsed = updateUserRoleSchema.safeParse({ id, ...body });
@@ -45,6 +33,8 @@ export async function PATCH(
 
     const { role } = parsed.data;
 
+    // Update role directly via Prisma; the admin plugin's custom roles
+    // (ADMIN/EDITOR/USER) use the same column but aren't in its built-in types.
     const user = await prisma.user.update({
       where: { id },
       data: { role: role as Role },
@@ -69,17 +59,9 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role;
-    if (userRole !== "ADMIN") {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(ADMIN_ROLES);
+    if (!authResult.ok) return authResult.response;
+    const { session } = authResult;
 
     // Prevent self-deletion
     if (id === session.user.id) {
@@ -89,6 +71,7 @@ export async function DELETE(
       );
     }
 
+    // Delete directly via Prisma; cascades to sessions and accounts
     await prisma.user.delete({ where: { id } });
 
     return NextResponse.json({ success: true });

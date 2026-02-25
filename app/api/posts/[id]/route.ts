@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import slugify from "slugify";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
+import { requireAnyRole, STAFF_ROLES } from "@/lib/dal";
 import { updatePostSchema } from "@/lib/schemas/post";
-
-type SessionUser = typeof auth.$Infer.Session.user;
 
 // GET /api/posts/[id]
 // Retrieves a single post by id.
@@ -60,17 +57,9 @@ export async function PUT(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role ?? "";
-    if (!["ADMIN", "EDITOR"].includes(userRole)) {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
+    const { session } = authResult;
 
     const body = await req.json();
     const parsed = updatePostSchema.safeParse(body);
@@ -167,17 +156,8 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role ?? "";
-    if (!["ADMIN", "EDITOR"].includes(userRole)) {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     const body = await req.json();
     const parsed = z.object({ isHighlight: z.boolean() }).safeParse(body);
@@ -216,17 +196,8 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi" },
-        { status: 401 },
-      );
-    }
-    const userRole = (session.user as SessionUser).role ?? "";
-    if (!["ADMIN", "EDITOR"].includes(userRole)) {
-      return NextResponse.json({ error: "Tidak diizinkan" }, { status: 403 });
-    }
+    const authResult = await requireAnyRole(STAFF_ROLES);
+    if (!authResult.ok) return authResult.response;
 
     await prisma.post.delete({ where: { id } });
 
