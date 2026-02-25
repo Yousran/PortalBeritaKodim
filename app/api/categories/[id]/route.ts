@@ -16,6 +16,17 @@ export async function DELETE(
     if (!authResult.ok) return authResult.response;
 
     // Guard: category cannot be deleted while posts still reference it
+    const existing = await prisma.category.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Kategori tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
     const postCount = await prisma.post.count({ where: { categoryId: id } });
     if (postCount > 0) {
       return NextResponse.json(

@@ -35,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { toPascalCase } from "@/utils/string";
 import { CategoryBadge } from "@/components/custom/category-badge";
 import {
@@ -209,10 +210,18 @@ export default function PostsPage() {
       const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmPost(null);
+        toast.success("Postingan berhasil dihapus");
         const isLastOnPage = data?.data.length === 1 && page > 1;
         if (isLastOnPage) setPage((p) => p - 1);
         else await fetchPosts();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal menghapus postingan");
+        setConfirmPost(null);
       }
+    } catch {
+      toast.error("Gagal menghapus postingan");
+      setConfirmPost(null);
     } finally {
       setDeletingId(null);
     }

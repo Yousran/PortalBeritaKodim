@@ -412,10 +412,18 @@ export default function BreakingNewsPage() {
       });
       if (res.ok) {
         setConfirmDeleteId(null);
+        toast.success("Breaking news berhasil dihapus");
         const isLastOnPage = data?.data.length === 1 && page > 1;
         if (isLastOnPage) setPage((p) => p - 1);
         else await fetchItems();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal menghapus breaking news");
+        setConfirmDeleteId(null);
       }
+    } catch {
+      toast.error("Gagal menghapus breaking news");
+      setConfirmDeleteId(null);
     } finally {
       setDeletingId(null);
     }

@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -261,10 +262,18 @@ export default function MessagesPage() {
       const res = await fetch(`/api/messages/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmMessage(null);
+        toast.success("Pesan berhasil dihapus");
         const isLastOnPage = data?.data.length === 1 && page > 1;
         if (isLastOnPage) setPage((p) => p - 1);
         else await fetchMessages();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal menghapus pesan");
+        setConfirmMessage(null);
       }
+    } catch {
+      toast.error("Gagal menghapus pesan");
+      setConfirmMessage(null);
     } finally {
       setDeletingId(null);
     }

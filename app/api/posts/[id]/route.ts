@@ -199,6 +199,17 @@ export async function DELETE(
     const authResult = await requireAnyRole(STAFF_ROLES);
     if (!authResult.ok) return authResult.response;
 
+    const existing = await prisma.post.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Postingan tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
     await prisma.post.delete({ where: { id } });
 
     return NextResponse.json({ success: true });

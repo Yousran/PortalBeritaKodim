@@ -247,6 +247,17 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    const existing = await prisma.breakingNews.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Breaking news tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
     await prisma.breakingNews.delete({ where: { id } });
 
     return NextResponse.json({ success: true });

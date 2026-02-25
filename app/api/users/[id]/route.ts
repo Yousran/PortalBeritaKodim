@@ -71,6 +71,17 @@ export async function DELETE(
       );
     }
 
+    const existing = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Pengguna tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
     // Delete directly via Prisma; cascades to sessions and accounts
     await prisma.user.delete({ where: { id } });
 

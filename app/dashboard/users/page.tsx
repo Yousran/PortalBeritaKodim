@@ -33,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -218,10 +219,18 @@ export default function UsersPage() {
       const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
       if (res.ok) {
         setConfirmUser(null);
+        toast.success("Pengguna berhasil dihapus");
         const isLastOnPage = data?.data.length === 1 && page > 1;
         if (isLastOnPage) setPage((p) => p - 1);
         else await fetchUsers();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error ?? "Gagal menghapus pengguna");
+        setConfirmUser(null);
       }
+    } catch {
+      toast.error("Gagal menghapus pengguna");
+      setConfirmUser(null);
     } finally {
       setDeletingId(null);
     }
