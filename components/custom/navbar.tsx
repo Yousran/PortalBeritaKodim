@@ -187,7 +187,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
                         <ChevronDown className="size-3.5" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="min-w-[220px]">
+                    <DropdownMenuContent align="start" className="min-w-55">
                       <DropdownMenuGroup>
                         {link.children.map((child) => {
                           const childActive = pathname === child.href;
