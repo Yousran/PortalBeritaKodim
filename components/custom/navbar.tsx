@@ -45,7 +45,7 @@ interface NavLink {
 const publicLinks: NavLink[] = [
   { label: "Beranda", href: "/" },
   { label: "Program Pembinaan", href: "/program-pembinaan" },
-  { label: "Aduan", href: "/kontak" },
+  { label: "Aduan", href: "/aduan" },
 ];
 
 const dashboardLinks: NavLink[] = [
@@ -223,7 +223,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem asChild>
-                      <Link href={`/profil/${session.user.id}`}>
+                      <Link href={`/akun/${session.user.id}`}>
                         <User />
                         Profil
                       </Link>
