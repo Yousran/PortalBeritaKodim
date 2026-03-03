@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 const navLinks = [
   { label: "Beranda", href: "/" },
   { label: "Sejarah Satuan", href: "/profil/sejarah-satuan" },
-  { label: "Pejabat Kodim", href: "/profil/pejabat-kodim" },
+  { label: "Pejabat Kodim 1408", href: "/profil/pejabat-kodim" },
   { label: "Struktur Organisasi", href: "/profil/struktur-organisasi" },
   { label: "Program Pembinaan", href: "/program-pembinaan" },
   { label: "Aduan", href: "/aduan" },
@@ -40,7 +40,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm leading-relaxed text-foreground/60">
-              Website resmi Kodim 1408/Mks. Menyajikan informasi terkini seputar
+              Website resmi Kodim 1408/Mks menyajikan informasi terkini seputar
               kegiatan yang dilakukan oleh Kodim 1408/Mks di wilayah Kota
               Makassar dan sekitarnya.
             </p>
