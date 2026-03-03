@@ -78,7 +78,7 @@ const profilDropdown: NavDropdown = {
 const publicLinks: NavItem[] = [
   { label: "Beranda", href: "/" },
   profilDropdown,
-  { label: "Program Pembinaan", href: "/program-pembinaan" },
+  { label: "Program Satuan", href: "/program-satuan" },
   { label: "Aduan", href: "/aduan" },
 ];
 
