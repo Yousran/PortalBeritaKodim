@@ -6,8 +6,11 @@ import { Separator } from "@/components/ui/separator";
 
 const navLinks = [
   { label: "Beranda", href: "/" },
+  { label: "Sejarah Satuan", href: "/profil/sejarah-satuan" },
+  { label: "Pejabat Kodim", href: "/profil/pejabat-kodim" },
+  { label: "Struktur Organisasi", href: "/profil/struktur-organisasi" },
   { label: "Program Pembinaan", href: "/program-pembinaan" },
-  { label: "Kontak", href: "/kontak" },
+  { label: "Aduan", href: "/aduan" },
 ];
 
 export default function Footer() {
@@ -77,7 +80,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Kontak */}
+          {/* Aduan */}
           <div>
             <h4 className="text-foreground font-semibold mb-4">Kontak</h4>
             <div className="space-y-3 text-sm">
@@ -158,13 +161,13 @@ export default function Footer() {
           </p>
           <div className="flex gap-4">
             <Link
-              href="/kontak"
+              href="/aduan"
               className="hover:text-primary transition-colors"
             >
-              Kontak
+              Aduan
             </Link>
             <Link
-              href="/program-pembinaan"
+              href="/program-satuan"
               className="hover:text-primary transition-colors"
             >
               Program

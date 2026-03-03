@@ -18,6 +18,10 @@ import {
   X,
   LayoutDashboard,
   Search,
+  ChevronDown,
+  History,
+  UserCheck,
+  Network,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -42,10 +46,33 @@ interface NavLink {
   href: string;
 }
 
-const publicLinks: NavLink[] = [
+interface NavDropdown {
+  label: string;
+  href: string;
+  children: { label: string; href: string; icon: React.ElementType }[];
+}
+
+type NavItem = NavLink | NavDropdown;
+
+function isDropdown(item: NavItem): item is NavDropdown {
+  return "children" in item;
+}
+
+const profilDropdown: NavDropdown = {
+  label: "Profil",
+  href: "/profil",
+  children: [
+    { label: "Sejarah Satuan", href: "/profil/sejarah-satuan", icon: History },
+    { label: "Pejabat Kodim 1408", href: "/profil/pejabat-kodim", icon: UserCheck },
+    { label: "Struktur Organisasi", href: "/profil/struktur-organisasi", icon: Network },
+  ],
+};
+
+const publicLinks: NavItem[] = [
   { label: "Beranda", href: "/" },
-  { label: "Program Pembinaan", href: "/program-pembinaan" },
-  { label: "Aduan", href: "/kontak" },
+  profilDropdown,
+  { label: "Program Satuan", href: "/program-satuan" },
+  { label: "Aduan", href: "/aduan" },
 ];
 
 const dashboardLinks: NavLink[] = [
@@ -76,6 +103,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileProfilOpen, setMobileProfilOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -103,7 +131,8 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
     ? dashboardLinks
     : dashboardLinks.filter((l) => l.href !== "/dashboard/users");
 
-  const links = variant === "dashboard" ? visibleDashboardLinks : publicLinks;
+  const links: NavItem[] =
+    variant === "dashboard" ? visibleDashboardLinks : publicLinks;
 
   async function handleSignOut() {
     await authClient.signOut();
@@ -140,6 +169,49 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
         {/* ── Desktop Navigation ── */}
         <ul className="hidden flex-1 items-center justify-center gap-1 md:flex">
           {links.map((link) => {
+            if (isDropdown(link)) {
+              const dropdownActive = pathname.startsWith(link.href);
+              return (
+                <li key={link.href}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={cn(
+                          "flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors outline-none",
+                          dropdownActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-foreground hover:bg-foreground/10",
+                        )}
+                      >
+                        {link.label}
+                        <ChevronDown className="size-3.5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="min-w-55">
+                      <DropdownMenuGroup>
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          const ChildIcon = child.icon;
+                          return (
+                            <DropdownMenuItem key={child.href} asChild>
+                              <Link
+                                href={child.href}
+                                className={cn(
+                                  childActive && "bg-primary/10 text-primary",
+                                )}
+                              >
+                                <ChildIcon className="size-4" />
+                                {child.label}
+                              </Link>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+              );
+            }
             const Icon = dashboardIcons[link.href];
             const active =
               link.href === "/" || link.href === "/dashboard"
@@ -223,7 +295,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem asChild>
-                      <Link href={`/profil/${session.user.id}`}>
+                      <Link href={`/akun/${session.user.id}`}>
                         <User />
                         Profil
                       </Link>
@@ -318,6 +390,63 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
         <div className="border-t border-foreground/10 bg-card/90 px-4 pb-4 pt-2 backdrop-blur-md md:hidden">
           <ul className="flex flex-col gap-1">
             {links.map((link) => {
+              if (isDropdown(link)) {
+                const dropdownActive = pathname.startsWith(link.href);
+                return (
+                  <li key={link.href}>
+                    <button
+                      onClick={() => setMobileProfilOpen((o) => !o)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition-colors",
+                        dropdownActive
+                          ? "text-primary"
+                          : "text-foreground hover:bg-foreground/10",
+                      )}
+                    >
+                      {link.label}
+                      <ChevronDown
+                        className={cn(
+                          "size-4 transition-transform",
+                          mobileProfilOpen && "rotate-180",
+                        )}
+                      />
+                    </button>
+                    <div
+                      className={cn(
+                        "overflow-hidden transition-all duration-200 ease-in-out",
+                        mobileProfilOpen ? "max-h-60" : "max-h-0",
+                      )}
+                    >
+                      <ul className="ml-2 flex flex-col gap-0.5 border-l-2 border-foreground/10 pl-3 pt-1">
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          const ChildIcon = child.icon;
+                          return (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                onClick={() => {
+                                  setMobileOpen(false);
+                                  setMobileProfilOpen(false);
+                                }}
+                                className={cn(
+                                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                  childActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-foreground hover:bg-foreground/10",
+                                )}
+                              >
+                                <ChildIcon className="size-4 shrink-0" />
+                                {child.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </li>
+                );
+              }
               const Icon = dashboardIcons[link.href];
               const active =
                 link.href === "/" || link.href === "/dashboard"

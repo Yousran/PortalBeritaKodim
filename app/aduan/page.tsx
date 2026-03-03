@@ -14,7 +14,7 @@ interface FormState {
   content: string;
 }
 
-export default function KontakPage() {
+export default function AduanPage() {
   const [form, setForm] = useState<FormState>({
     fullName: "",
     email: "",
