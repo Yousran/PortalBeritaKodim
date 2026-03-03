@@ -18,6 +18,7 @@ import {
   X,
   LayoutDashboard,
   Search,
+  ChevronDown,
   History,
   UserCheck,
   Network,
@@ -36,14 +37,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { getInitials } from "@/utils/string";
 
@@ -110,6 +103,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileProfilOpen, setMobileProfilOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -173,80 +167,74 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
         </Link>
 
         {/* ── Desktop Navigation ── */}
-        <div className="hidden flex-1 items-center justify-center md:flex">
-          <NavigationMenu viewport={false}>
-            <NavigationMenuList className="gap-1">
-              {links.map((link) => {
-                if (isDropdown(link)) {
-                  const dropdownActive = pathname.startsWith(link.href);
-                  return (
-                    <NavigationMenuItem key={link.href}>
-                      <NavigationMenuTrigger
+        <ul className="hidden flex-1 items-center justify-center gap-1 md:flex">
+          {links.map((link) => {
+            if (isDropdown(link)) {
+              const dropdownActive = pathname.startsWith(link.href);
+              return (
+                <li key={link.href}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
                         className={cn(
-                          "h-auto rounded-md bg-transparent px-3 py-1.5 text-sm font-medium",
+                          "flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors outline-none",
                           dropdownActive
-                            ? "bg-primary/10 text-primary hover:bg-primary/10 focus:bg-primary/10 data-[state=open]:bg-primary/10"
-                            : "text-foreground hover:bg-foreground/10 focus:bg-foreground/10 data-[state=open]:bg-foreground/10",
-                        )}
-                      >
-                        {link.label}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent className="min-w-55">
-                        <ul className="flex flex-col gap-0.5 p-1.5">
-                          {link.children.map((child) => {
-                            const childActive = pathname === child.href;
-                            const ChildIcon = child.icon;
-                            return (
-                              <li key={child.href}>
-                                <NavigationMenuLink asChild>
-                                  <Link
-                                    href={child.href}
-                                    className={cn(
-                                      "flex flex-row items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                                      childActive
-                                        ? "bg-primary/10 text-primary"
-                                        : "text-foreground hover:bg-foreground/10",
-                                    )}
-                                  >
-                                    <ChildIcon className="size-4 shrink-0" />
-                                    {child.label}
-                                  </Link>
-                                </NavigationMenuLink>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </NavigationMenuContent>
-                    </NavigationMenuItem>
-                  );
-                }
-                const Icon = dashboardIcons[link.href];
-                const active =
-                  link.href === "/" || link.href === "/dashboard"
-                    ? pathname === link.href
-                    : pathname.startsWith(link.href);
-                return (
-                  <NavigationMenuItem key={link.href}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={link.href}
-                        className={cn(
-                          "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                          active
                             ? "bg-primary/10 text-primary"
                             : "text-foreground hover:bg-foreground/10",
                         )}
                       >
-                        {Icon && <Icon className="size-4 shrink-0" />}
                         {link.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
+                        <ChevronDown className="size-3.5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="min-w-[220px]">
+                      <DropdownMenuGroup>
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          const ChildIcon = child.icon;
+                          return (
+                            <DropdownMenuItem key={child.href} asChild>
+                              <Link
+                                href={child.href}
+                                className={cn(
+                                  childActive && "bg-primary/10 text-primary",
+                                )}
+                              >
+                                <ChildIcon className="size-4" />
+                                {child.label}
+                              </Link>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+              );
+            }
+            const Icon = dashboardIcons[link.href];
+            const active =
+              link.href === "/" || link.href === "/dashboard"
+                ? pathname === link.href
+                : pathname.startsWith(link.href);
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-foreground/10",
+                  )}
+                >
+                  {Icon && <Icon className="size-4 shrink-0" />}
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
 
         {/* ── Right Side: Theme + Avatar ── */}
         <div className="flex shrink-0 items-center gap-1">
@@ -406,39 +394,56 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
                 const dropdownActive = pathname.startsWith(link.href);
                 return (
                   <li key={link.href}>
-                    <p
+                    <button
+                      onClick={() => setMobileProfilOpen((o) => !o)}
                       className={cn(
-                        "px-3 py-2 text-sm font-semibold",
+                        "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition-colors",
                         dropdownActive
                           ? "text-primary"
-                          : "text-foreground/60",
+                          : "text-foreground hover:bg-foreground/10",
                       )}
                     >
                       {link.label}
-                    </p>
-                    <ul className="ml-2 flex flex-col gap-0.5 border-l-2 border-foreground/10 pl-3">
-                      {link.children.map((child) => {
-                        const childActive = pathname === child.href;
-                        const ChildIcon = child.icon;
-                        return (
-                          <li key={child.href}>
-                            <Link
-                              href={child.href}
-                              onClick={() => setMobileOpen(false)}
-                              className={cn(
-                                "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                                childActive
-                                  ? "bg-primary/10 text-primary"
-                                  : "text-foreground hover:bg-foreground/10",
-                              )}
-                            >
-                              <ChildIcon className="size-4 shrink-0" />
-                              {child.label}
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                      <ChevronDown
+                        className={cn(
+                          "size-4 transition-transform",
+                          mobileProfilOpen && "rotate-180",
+                        )}
+                      />
+                    </button>
+                    <div
+                      className={cn(
+                        "overflow-hidden transition-all duration-200 ease-in-out",
+                        mobileProfilOpen ? "max-h-60" : "max-h-0",
+                      )}
+                    >
+                      <ul className="ml-2 flex flex-col gap-0.5 border-l-2 border-foreground/10 pl-3 pt-1">
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          const ChildIcon = child.icon;
+                          return (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                onClick={() => {
+                                  setMobileOpen(false);
+                                  setMobileProfilOpen(false);
+                                }}
+                                className={cn(
+                                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                  childActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-foreground hover:bg-foreground/10",
+                                )}
+                              >
+                                <ChildIcon className="size-4 shrink-0" />
+                                {child.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   </li>
                 );
               }
